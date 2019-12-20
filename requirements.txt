@@ -1,0 +1,6 @@
+requests
+robotframework
+robotframework-seleniumlibrary
+discord-py
+flask
+robotframework-requests

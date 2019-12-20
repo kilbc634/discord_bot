@@ -1,0 +1,1 @@
+robot -d /home/felix/Tsukumo99/discord_bot/report upload_to_FB.robot
