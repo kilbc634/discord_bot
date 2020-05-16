@@ -65,9 +65,9 @@ Upload Image To Post Area
     ...    ELSE    Choose File    ${secondPath}    ${attachments[0]}
     Wait Until Page Contains Element    //*[@aria-valuenow]
     Wait Until Page Does Not Contain Element    //*[@aria-valuenow]
-    Wait Until Page Contains Element    //div[@data-testid="media-attachment-photo"]//img[contains(@alt, "image_${callNode}.png")]/parent::div[@class="_jfc"]
-    Wait Until Page Does Not Contain Element    //div[@data-testid="media-attachment-photo"]//img[@alt="${attachments[0]}"]/parent::div[@class="_jfc_jfd"]
-    Wait Until Page Does Not Contain Element    //div[@data-testid="media-attachment-photo"]//img[@alt="${attachments[0]}"]/parent::div/div[@class="_jff"]
+    Wait Until Page Contains Element    //div[@class="fbScrollableArea"]//img[contains(@alt, "image_${callNode}.png")]/parent::div[@class="_jfc"]
+    Wait Until Page Does Not Contain Element    //div[@class="fbScrollableArea"]//img[@alt="${attachments[0]}"]/parent::div[@class="_jfc_jfd"]
+    Wait Until Page Does Not Contain Element    //div[@class="fbScrollableArea"]//img[@alt="${attachments[0]}"]/parent::div/div[@class="_jff"]
 
 Click Send Post Button
     [Documentation]    Click send post button
