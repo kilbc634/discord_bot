@@ -42,8 +42,8 @@ Active Post Area
 
 Click Post Area
     [Documentation]    Click post area
-    ${firstPath} =    Set Variable    //div[@id="pagelet_group_composer"]//textarea[@data-testid="status-attachment-mentions-input"]
-    ${secondPath} =    Set Variable    //div[@id="pagelet_group_composer"]//div[@aria-describedby="placeholder-d5m97"]
+    ${firstPath} =    Set Variable    //textarea[@name="xhpc_message_text"]
+    ${secondPath} =    Set Variable    //div[@aria-describedby="placeholder-41rom"]
     ${status} =    Run Keyword And Return Status    Wait Until Page Contains Element    ${firstPath}    10s
     Run Keyword If    '${status}' == 'True'    Click Element    ${firstPath}
     ...    ELSE    Click Element    ${secondPath}
