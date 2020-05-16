@@ -71,11 +71,9 @@ Upload Image To Post Area
 
 Click Send Post Button
     [Documentation]    Click send post button
-    Wait Until Element Is Enabled    //button[@data-testid="react-composer-post-button"]
-    Click Element    //button[@data-testid="react-composer-post-button"]
-    Wait Until Page Contains Element    //button[@data-testid="react-composer-post-button"]//span[@class="_5gm9"]
-    Wait Until Page Does Not Contain Element    //button[@data-testid="react-composer-post-button"]
-    Wait Until Element Is Visible    //div[@class="composerPostSection"]/div
+    Wait Until Element Is Enabled    //span[text()="發佈"]/parent::button[@type="submit"]
+    Click Element    //span[text()="發佈"]/parent::button[@type="submit"]
+    Wait Until Page Does Not Contain Element    //span[text()="發佈"]/parent::button[@type="submit"]
 
 Get Data Via Endpoint API
     [Documentation]    Use call node to get data via endpoint api
@@ -83,5 +81,3 @@ Get Data Via Endpoint API
     ${resp} =    Get Request    connectServer    /endpoint/call/${nodeName}
     Dictionary Should Contain Key    ${resp.json()}    data
     [Return]    ${resp.json()}
-    # TO DO
-    # call [GET] http://127.0.0.1:21099/endpoint/call/{nodeName}
