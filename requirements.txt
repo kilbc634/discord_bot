@@ -1,6 +1,6 @@
-requests
-robotframework
-robotframework-seleniumlibrary
-discord-py
-flask
-robotframework-requests
+requests==2.22.0
+robotframework==3.1.2
+robotframework-seleniumlibrary==4.1.0
+discord-py==1.4.1
+flask==0.11.1
+robotframework-requests==0.6.3
