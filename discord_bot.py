@@ -10,6 +10,7 @@ import threading
 from flask import Flask, jsonify, request
 import json
 import asyncio
+import connect_server
 
 client = None
 TOKEN = '***'
@@ -60,7 +61,10 @@ class MyClient(discord.Client):
             await message.channel.send('\n'.join(members_list))
     
     async def on_ready(self):
-        print('Logged on as', self.user)
+        try:
+            print('Logged on as', self.user)
+        except UnicodeEncodeError:
+            print('Logged on as ***UnicodeEncodeError***')
 
     async def on_message(self, message):
         # don't respond to ourselves
@@ -108,10 +112,6 @@ class MyClient(discord.Client):
         if message.content == 'tag_test':
             await message.channel.send('<@300498879433146389>') # @Matcha#8964
 
-def async_execute(func):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(func)
-
 @endPoint.route("/")
 def welcome():
     return "This is End Point Service of Discord bot" , 200
@@ -129,13 +129,21 @@ def message_user():
     client.loop.create_task(client.send_DM(userId, 'from {sender}:\n{message}'.format(**locals())))
     return 'OK', 200
 
+
+async def start():
+    await client.start(TOKEN)
+
+def run_it_forever(loop):
+    loop.run_forever()
+
 if __name__=='__main__':
-    myDir = os.getcwd()
-    p = subprocess.Popen('python ' + myDir + '\connect_server.py')
-    time.sleep(3)
+    thread1 = threading.Thread(target=connect_server.run)
+    thread1.start()
 
     client = MyClient()
-    thread_discordBot = threading.Thread(target=client.run, args=(TOKEN,))
-    thread_discordBot.start()
+    loop = asyncio.get_event_loop()
+    loop.create_task(start())
+    thread2 = threading.Thread(target=run_it_forever, args=(loop,))
+    thread2.start()
     
     endPoint.run(host='0.0.0.0', debug=True, port=21090, use_reloader=False)
