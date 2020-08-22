@@ -13,7 +13,7 @@ import asyncio
 import connect_server
 
 client = None
-TOKEN = '***'
+TOKEN = os.getenv('BOT_TOKEN', '***')
 endPoint = Flask('extraService')
 
 Affect_channels = ['bot乱交', '車']
