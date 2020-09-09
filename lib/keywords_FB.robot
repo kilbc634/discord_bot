@@ -4,7 +4,7 @@ Login FB For Normal Interface
     Wait Until Element Is Visible    //input[@data-testid="royal_email"]
     Input Text    //input[@data-testid="royal_email"]    ${MY_ACCOUNT}
     Input Text    //input[@data-testid="royal_pass"]    ${MY_PASSWORD}
-    Click Element    //input[@data-testid="royal_login_button"]
+    Click Element    //button[@data-testid="royal_login_button"]
 
 Login FB For Another Interface
     [Documentation]    Login FB for another interface (white face)
@@ -18,62 +18,52 @@ Login FB
     ${status} =    Run Keyword And Return Status    Wait Until Page Contains Element    //input[@data-testid="royal_email"]    5s
     Run Keyword If    '${status}' == 'True'    Login FB For Normal Interface
     ...    ELSE    Login FB For Another Interface
-    Wait Until Element Is Visible    //a[@data-testid="left_nav_item_${FB_NAME}"]
+    Verify Login Account Is Correct    ${FB_NAME}
 
 Go To Specific Group By Left Nav
     [Documentation]    Click left navigation list to go to specific group
-    [Arguments]    ${groupName}    ${groupHeaderLink}=${None}
-    Wait Until Element Is Visible    //a[@data-testid="left_nav_item_${groupName}"]
-    Wait Until Keyword Succeeds    3s    0.5s    Click Element    //a[@data-testid="left_nav_item_${groupName}"]
-    Run Keyword If    '${groupHeaderLink}' != '${None}'    Verify Group Page Header Link    ${groupHeaderLink}
+    [Arguments]    ${groupName}
+    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${groupName}"]
+    Wait Until Keyword Succeeds    3s    0.5s    Click Element    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${groupName}"]
+    Verify Group Page Header Name Is Correct    ${groupName}
 
-Verify Group Page Header Link
-    [Documentation]    Verify or wait page stay on specific group
-    [Arguments]    ${groupHeaderLink}
-    Wait Until Element Is Visible    //div[@data-testid="group_sidebar_nav"]/div/h1/a[@href="${groupHeaderLink}"]
+Verify Group Page Header Name Is Correct
+    [Documentation]    Verify group page header name is correct
+    [Arguments]    ${groupName}
+    Wait Until Element Is Visible    //span[@class="oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql a8c37x1j irj2b8pg q9se6cdp m6dqt4wy h7mekvxk hnhda86s oo9gr5id hzawbc8m"][text()="${groupName}"]
+
+Verify Login Account Is Correct
+    [Documentation]    Verify login account is correct
+    [Arguments]    ${accountName}
+    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${accountName}"]
 
 Active Post Area
-    [Documentation]    Active post area to stay ready post stance
-    ${status} =    Run Keyword And Return Status    Wait Until Page Contains Element    //table[@class="_4ukb _2j7c uiGrid _51mz"]    2.5s
-    Run Keyword If    '${status}' == 'False'    Click Post Area
-    Wait Until Page Contains Element    //table[@class="_4ukb _2j7c uiGrid _51mz"]
-    Wait Until Element Is Visible    //div[@spellcheck="true"]
-    Click Element    //div[@spellcheck="true"]
-
-Click Post Area
-    [Documentation]    Click post area
-    ${firstPath} =    Set Variable    //textarea[@name="xhpc_message_text"]
-    ${secondPath} =    Set Variable    //div[@aria-describedby="placeholder-41rom"]
-    ${status} =    Run Keyword And Return Status    Wait Until Page Contains Element    ${firstPath}    10s
-    Run Keyword If    '${status}' == 'True'    Click Element    ${firstPath}
-    ...    ELSE    Click Element    ${secondPath}
+    [Documentation]    Click post area to stay ready post stance
+    Wait Until Element Is Visible    //div[@class="oajrlxb2 b3i9ofy5 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x cxgpxx05 d1544ag0 sj5x9vvc tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l bp9cbjyn orhb3f3m czkt41v7 fmqxjp7s emzo65vh btwxx1t3 buofh1pr idiwt2bm jifvfom9 ni8dbmo4 stjgntxs kbf60n1y"][@role="button"]
+    Click Element    //div[@class="oajrlxb2 b3i9ofy5 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x cxgpxx05 d1544ag0 sj5x9vvc tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l bp9cbjyn orhb3f3m czkt41v7 fmqxjp7s emzo65vh btwxx1t3 buofh1pr idiwt2bm jifvfom9 ni8dbmo4 stjgntxs kbf60n1y"][@role="button"]
 
 Typeing Message On Post Area
     [Documentation]    Typeing message on post area
     [Arguments]    ${content}
-    Active Post Area
+    Wait Until Element Is Visible    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//div[@class="notranslate _5rpu"][@role="textbox"]
+    Click Element    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//div[@class="notranslate _5rpu"][@role="textbox"]
     Press Keys    ${None}    ${content}
 
 Upload Image To Post Area
     [Documentation]    Upload image to post area
     [Arguments]    ${attachments}
-    Active Post Area
-    ${firstPath} =    Set Variable    //li[contains(@class , "fbReactComposerAttachmentSelector_MEDIA")]//input
-    ${secondPath} =    Set Variable    //td[contains(@class , "fbReactComposerAttachmentSelector_MEDIA")]//input
-    ${status} =    Run Keyword And Return Status    Page Should Contain Element    ${firstPath}
-    Run Keyword If    '${status}' == 'True'    Choose File    ${firstPath}    ${attachments[0]}
-    ...    ELSE    Choose File    ${secondPath}    ${attachments[0]}
-    Wait Until Page Contains Element    //*[@aria-valuenow]
-    Wait Until Page Does Not Contain Element    //*[@aria-valuenow]
-    Wait Until Page Contains Element    //div[@class="fbScrollableArea"]//img[contains(@alt, "image_${callNode}.png")]/parent::div[@class="_jfc"]
-    Wait Until Page Does Not Contain Element    //div[@class="fbScrollableArea"]//img[@alt="${attachments[0]}"]/parent::div[@class="_jfc_jfd"]
-    Wait Until Page Does Not Contain Element    //div[@class="fbScrollableArea"]//img[@alt="${attachments[0]}"]/parent::div/div[@class="_jff"]
+    Wait Until Element Is Visible    //i[@class="hu5pjgll bixrwtb6 sp_XRoMnlkJWss sx_63c3b4"]
+    Click Element    //i[@class="hu5pjgll bixrwtb6 sp_XRoMnlkJWss sx_63c3b4"]
+    Wait Until Page Contains Element    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]
+    Choose File    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]    ${attachments[0]}
+    Wait Until Element Is Visible    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//i[@class="hu5pjgll m6k467ps sp_6vYwcjvw5IC sx_971d14"]
+    Click Element    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//i[@class="hu5pjgll m6k467ps sp_6vYwcjvw5IC sx_971d14"]
 
 Click Send Post Button
     [Documentation]    Click send post button
-    Wait Until Element Is Enabled    //span[text()="發佈"]/parent::button[@type="submit"]
-    Click Element    //span[text()="發佈"]/parent::button[@type="submit"]
-    Wait Until Page Does Not Contain Element    //span[text()="發佈"]/parent::button[@type="submit"]
+    Wait Until Element Is Visible    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//div[@class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l beltcj47 p86d2i9g aot14ch1 kzx2olss cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"][@role="button"]
+    Click Element    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//div[@class="oajrlxb2 s1i5eluu gcieejh5 bn081pho humdl8nn izx4hr6d rq0escxv nhd2j8a9 j83agx80 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys d1544ag0 qt6c0cv9 tw6a2znq i1ao9s8h esuyzwwr f1sip0of lzcic4wl l9j0dhe7 abiwlrkh p8dawk7l beltcj47 p86d2i9g aot14ch1 kzx2olss cbu4d94t taijpn5t ni8dbmo4 stjgntxs k4urcfbm tv7at329"][@role="button"]
+    Wait Until Page Does Not Contain Element    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]
 
 Get Data Via Endpoint API
     [Documentation]    Use call node to get data via endpoint api

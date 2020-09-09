@@ -1,24 +1,20 @@
 *** Settings ***
-Library         SeleniumLibrary    15    10
+Library         SeleniumLibrary    30    10
 Library         OperatingSystem
 Library         RequestsLibrary
 Library         Collections
+Variables       ../setting.py
 Resource        ./keywords_FB.robot
+
 Suite Setup    SuiteSetup
 Suite Teardown    Close All Browsers
-
-*** Variables ***
-${MY_ACCOUNT}    k******34@gmail.com
-${MY_PASSWORD}    *********
-${FB_NAME}    七波 シロネ
-${FB_GROUP}    暫時不知道做什麼用的社團
-${FB_GROUP_LINK}    /groups/422981628065868/?ref=group_header
 
 *** Test Cases ***
 Upload to HU group by user acconut
     [Tags]    upload_to_FB_A
     Login FB
-    Go To Specific Group By Left Nav    ${FB_GROUP}    ${FB_GROUP_LINK}
+    Go To Specific Group By Left Nav    ${FB_GROUP}
+    Active Post Area
     Typeing Message On Post Area    ${postMessage}
     ${attachmentsLen} =    Get Length    ${postAttachments}
     Run Keyword If    ${attachmentsLen} > ${0}    Upload Image To Post Area    ${postAttachments}
@@ -44,6 +40,7 @@ SuiteSetup
     ${len} =    Get Length    ${resp['data']['nodeContent']['image']}
     Run Keyword If    ${len} > ${0}    Download And Save Image To Local    ${resp['data']['nodeContent']['image']}
     ...    ELSE    Set Suite Variable    ${postAttachments}    ${None}
+    Set Window Size    1440    900
 
 Download And Save Image To Local
     [Arguments]    ${url}

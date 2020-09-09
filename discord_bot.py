@@ -11,9 +11,9 @@ from flask import Flask, jsonify, request
 import json
 import asyncio
 import connect_server
+from setting import *
 
 client = None
-TOKEN = os.getenv('BOT_TOKEN', '***')
 endPoint = Flask('extraService')
 
 Affect_channels = ['bot乱交', '車']
