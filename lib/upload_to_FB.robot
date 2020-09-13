@@ -39,7 +39,7 @@ SuiteSetup
     Set Suite Variable    ${postMessage}    ${resp['data']['nodeContent']['message']}
     ${len} =    Get Length    ${resp['data']['nodeContent']['image']}
     Run Keyword If    ${len} > ${0}    Download And Save Image To Local    ${resp['data']['nodeContent']['image']}
-    ...    ELSE    Set Suite Variable    ${postAttachments}    ${None}
+    ...    ELSE    Set Empty List
     Set Window Size    1440    900
 
 Download And Save Image To Local
@@ -49,3 +49,7 @@ Download And Save Image To Local
     Create Binary File    ${WORKDIR}/res/image/image_${callNode}.png    ${imageBin.content}
     @{imageList} =    Create List    ${WORKDIR}/res/image/image_${callNode}.png
     Set Suite Variable    ${postAttachments}    ${imageList}
+
+Set Empty List
+    @{list} =    Create List
+    Set Suite Variable    ${postAttachments}    ${list}

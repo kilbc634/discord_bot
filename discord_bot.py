@@ -98,7 +98,7 @@ class MyClient(discord.Client):
                 functionArg = message.content.split(' ', 1)[1]
             except IndexError:
                 functionArg = None
-            result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments[0].url)
+            result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments)
         
         ### test zone ###
         if message.content == 'ping':
