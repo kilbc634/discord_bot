@@ -25,13 +25,15 @@ SuiteSetup
     ${workDir} =    Evaluate    os.getcwd()    os
     Set Suite Variable    ${WORKDIR}    ${workDir}
     ${options}=    Evaluate  sys.modules['selenium.webdriver.chrome.options'].Options()    sys
+    Call Method     ${options}    add_argument    --no-sandbox
+    Call Method     ${options}    add_argument    --headless
+    Call Method     ${options}    add_argument    --disable-dev-shm-usage
     Call Method     ${options}    add_argument    --disable-notifications
     ${myOS} =    Evaluate    platform.system()    platform
     Run Keyword If    '${myOS}' == 'Windows'
     ...    Set Suite Variable    ${chromedriverPath}    ${WORKDIR}/lib/chromedriver_win.exe
     Run Keyword If    '${myOS}' == 'Linux'
     ...    Set Suite Variable    ${chromedriverPath}    ${WORKDIR}/lib/chromedriver_linux
-    #Call Method     ${options}    add_argument    --headless    # run chrome in background
     ${driver}=    Create Webdriver    Chrome    options=${options}    executable_path=${chromedriverPath}
     Go To     https://zh-tw.facebook.com/
     Create Session    connectServer    http://127.0.0.1:21099

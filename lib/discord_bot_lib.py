@@ -18,4 +18,4 @@ def exeFunction(functionType, functionArg=None, attachments=list()):
 
         # run robot to send post
         myDir = os.getcwd()
-        subprocess.call('robot -d {myDir}/report -v callNode:"{nodeName}" lib/upload_to_FB.robot'.format(**locals()))
+        subprocess.call('robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
