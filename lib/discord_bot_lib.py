@@ -7,7 +7,7 @@ import requests
 def exeFunction(functionType, functionArg=None, attachments=list()):
     if functionType == '開車':
         # create server endpoint
-        nodeName = str(int(time.time()))
+        nodeName = str(time.time())
         endpointData = dict()
         endpointData['message'] = functionArg
         if len(attachments) > 0:
@@ -16,6 +16,7 @@ def exeFunction(functionType, functionArg=None, attachments=list()):
             endpointData['image'] = ''
         res = requests.post('http://127.0.0.1:21099/endpoint/create/{nodeName}'.format(**locals()), json=endpointData)
 
-        # run robot to send post
+        # run robot to send post on FB page
         myDir = os.getcwd()
-        subprocess.call('robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
+        p = subprocess.Popen('robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
+        return {'processes': p}

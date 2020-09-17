@@ -23,19 +23,19 @@ Login FB
 Go To Specific Group By Left Nav
     [Documentation]    Click left navigation list to go to specific group
     [Arguments]    ${groupName}
-    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${groupName}"]
-    Wait Until Keyword Succeeds    3s    0.5s    Click Element    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${groupName}"]
+    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7"][text()="${groupName}"]
+    Wait Until Keyword Succeeds    3s    0.5s    Click Element    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7"][text()="${groupName}"]
     Verify Group Page Header Name Is Correct    ${groupName}
 
 Verify Group Page Header Name Is Correct
     [Documentation]    Verify group page header name is correct
     [Arguments]    ${groupName}
-    Wait Until Element Is Visible    //span[@class="oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql a8c37x1j irj2b8pg q9se6cdp m6dqt4wy h7mekvxk hnhda86s oo9gr5id hzawbc8m"][text()="${groupName}"]
+    Wait Until Element Is Visible    //span[@class="oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d3f4x2em fe6kdd0r mau55g9w c8b282yb h6olsfn3 m6dqt4wy h7mekvxk hnhda86s oo9gr5id hzawbc8m"][text()="${groupName}"]
 
 Verify Login Account Is Correct
     [Documentation]    Verify login account is correct
     [Arguments]    ${accountName}
-    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7 oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql muag1w35 enqfppq2 jq4qci2q a3bd9o3v ekzkrbhg oo9gr5id hzawbc8m"][text()="${accountName}"]
+    Wait Until Element Is Visible    //span[@class="a8c37x1j ni8dbmo4 stjgntxs l9j0dhe7"][text()="${accountName}"]
 
 Active Post Area
     [Documentation]    Click post area to stay ready post stance

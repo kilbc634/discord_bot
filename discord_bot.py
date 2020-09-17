@@ -99,6 +99,9 @@ class MyClient(discord.Client):
             except IndexError:
                 functionArg = None
             result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments)
+            if 'processes' in result:
+                process = result['processes']
+                ## TO DO: create task to waiting process complated, and send complate message to message.channel
         
         ### test zone ###
         if message.content == 'ping':
