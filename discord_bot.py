@@ -105,8 +105,6 @@ class MyClient(discord.Client):
             await message.channel.send('pong')
         if message.content == '嘿':
             await message.channel.send('白')
-        if message.content == 'オラオラ':
-            await message.channel.send('ムダムダ')
         if message.content == 'file_test':
             await message.channel.send('send 圖片', file=discord.File(os.getcwd() + '/res/image/sample_image2.jpg'))
         if message.content == 'tag_test':
