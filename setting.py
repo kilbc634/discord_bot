@@ -2,6 +2,7 @@ import os
 
 # DISCORD BOT
 TOKEN = os.getenv('BOT_TOKEN', '***')
+API_HOST = os.getenv('API_HOST', 'http://---.---.---.---:21090')
 # ROBOT
 MY_ACCOUNT = os.getenv('MY_ACCOUNT', 'ki***4@gmail.com')
 MY_PASSWORD = os.getenv('MY_PASSWORD', '***')

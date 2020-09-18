@@ -7,7 +7,7 @@ import os
 import time
 import subprocess
 import threading
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 import json
 import asyncio
 import connect_server
@@ -22,8 +22,12 @@ clannelId_onTest = 643265881996132362
 userId_owner = 407554740906360833
 
 class MyClient(discord.Client):
-    async def send_DM(self, userId, text):
+    async def send_DM(self, userId, text, att=None):
         channel = client.get_user(userId)
+        await channel.send(text)
+
+    async def send_message_to_channel(self, channelId, text, att=None):
+        channel = client.get_channel(channelId)
         await channel.send(text)
 
     async def forDM(self, message):
@@ -101,7 +105,15 @@ class MyClient(discord.Client):
             result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments)
             if 'processes' in result:
                 process = result['processes']
-                ## TO DO: create task to waiting process complated, and send complate message to message.channel
+                channelId = message.channel.id
+                def wait_robot_complated(process, reportChannelId=None):
+                    returncode = process.wait()
+                    if reportChannelId:
+                        fileUrl = API_HOST + '/report/log.html'
+                        reportText = 'Robot complated\nreport log: {fileUrl}'.format(fileUrl=fileUrl)
+                        client.loop.create_task(client.send_message_to_channel(reportChannelId, reportText))
+                waitingThread = threading.Thread(target=wait_robot_complated, args=(process, channelId))
+                waitingThread.start()
         
         ### test zone ###
         if message.content == 'ping':
@@ -116,6 +128,10 @@ class MyClient(discord.Client):
 @endPoint.route("/")
 def welcome():
     return "This is End Point Service of Discord bot" , 200
+
+@endPoint.route("/report/<path:path>")
+def view_report(path):
+    return send_from_directory('report', path)
 
 @endPoint.route("/message_user", methods=["POST"])
 def message_user():
