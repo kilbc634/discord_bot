@@ -30,7 +30,7 @@ Go To Specific Group By Left Nav
 Verify Group Page Header Name Is Correct
     [Documentation]    Verify group page header name is correct
     [Arguments]    ${groupName}
-    Wait Until Element Is Visible    //span[@class="oi732d6d ik7dh3pa d2edcug0 hpfvmrgz qv66sw1b c1et5uql a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d3f4x2em fe6kdd0r mau55g9w c8b282yb h6olsfn3 m6dqt4wy h7mekvxk hnhda86s oo9gr5id hzawbc8m"][text()="${groupName}"]
+    Wait Until Element Is Visible    //span[@class="d2edcug0 hpfvmrgz qv66sw1b c1et5uql rrkovp55 a8c37x1j keod5gw0 nxhoafnm aigsh9s9 embtmqzv fe6kdd0r mau55g9w c8b282yb hrzyx87i m6dqt4wy h7mekvxk hnhda86s oo9gr5id hzawbc8m"][text()="${groupName}"]
 
 Verify Login Account Is Correct
     [Documentation]    Verify login account is correct

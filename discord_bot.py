@@ -55,7 +55,7 @@ class MyClient(discord.Client):
             channel = client.get_channel(clannelId_onTest)
             await channel.send(text)
         
-        if message.content.find('!MEMBER_LIST') == 0:
+        if message.content.find('?MEMBER_LIST') == 0:
             members = client.get_all_members()
             members_list = list()
             for member in members:
@@ -63,6 +63,19 @@ class MyClient(discord.Client):
                 user_id = member.id
                 members_list.append('{user_name} ({user_id})'.format(**locals()))
             await message.channel.send('\n'.join(members_list))
+
+        if message.content.find('?CHANNEL_LIST') == 0:
+            channels = client.get_all_channels()
+            channels_list = list()
+            for channel in channels:
+                try:
+                    channel_name = channel.name
+                    channel_id = channel.id
+                    channel_guild = channel.guild.name
+                except:
+                    continue
+                channels_list.append('{channel_name} ({channel_id}) IN <<{channel_guild}>>'.format(**locals()))
+            await message.channel.send('\n'.join(channels_list))
     
     async def on_ready(self):
         try:
