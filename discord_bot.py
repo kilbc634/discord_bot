@@ -11,6 +11,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import json
 import asyncio
 import connect_server
+import linebot
 from setting import *
 
 client = None
@@ -159,6 +160,22 @@ def message_user():
     client.loop.create_task(client.send_DM(userId, 'from {sender}:\n{message}'.format(**locals())))
     return 'OK', 200
 
+DeviceStore = dict()
+
+@endPoint.route("/device/<deviceId>", methods=["POST"])
+def device_post(deviceId):
+    data = request.json
+    DeviceStore[deviceId] = data['setData']
+    deviceData = DeviceStore[deviceId]
+    return jsonify({'currentData': deviceData}), 200
+
+@endPoint.route("/device/<deviceId>", methods=["GET"])
+def device_get(deviceId):
+    if deviceId not in DeviceStore:
+        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 204
+    deviceData = DeviceStore[deviceId]
+    return jsonify({'currentData': deviceData}), 200
+
 
 async def start():
     await client.start(TOKEN)
@@ -169,6 +186,8 @@ def run_it_forever(loop):
 if __name__=='__main__':
     thread1 = threading.Thread(target=connect_server.run)
     thread1.start()
+    thread2 = threading.Thread(target=linebot.run)
+    thread2.start()
 
     client = MyClient()
     loop = asyncio.get_event_loop()

@@ -4,6 +4,9 @@ ENV LANG="C.UTF-8"
 WORKDIR /home/${APP_NAME}
 
 EXPOSE 21090
+EXPOSE 21190
+EXPOSE 443
+EXPOSE 80
 
 ADD ./ ./
 RUN pip3 install -r requirements.txt

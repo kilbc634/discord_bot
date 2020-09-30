@@ -4,3 +4,4 @@ robotframework-seleniumlibrary==4.1.0
 discord-py==1.4.1
 flask==1.1.2
 robotframework-requests==0.6.3
+line-bot-sdk==1.17.0
