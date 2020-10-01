@@ -11,7 +11,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import json
 import asyncio
 import connect_server
-import linebot
+import linebotapp
 from setting import *
 
 client = None
@@ -186,7 +186,7 @@ def run_it_forever(loop):
 if __name__=='__main__':
     thread1 = threading.Thread(target=connect_server.run)
     thread1.start()
-    thread2 = threading.Thread(target=linebot.run)
+    thread2 = threading.Thread(target=linebotapp.run)
     thread2.start()
 
     client = MyClient()
