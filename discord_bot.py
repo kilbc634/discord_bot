@@ -51,6 +51,9 @@ class MyClient(discord.Client):
             msg = message.content
             await channel.send('from {sender}:\n{msg}'.format(**locals()))
 
+        if message.content.find('?HOST') == 0:
+            await message.channel.send(API_HOST)
+
         if message.content.find('!SAY') == 0:
             text = message.content.split(' ', 1)[1]
             channel = client.get_channel(clannelId_onTest)
