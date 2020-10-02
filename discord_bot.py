@@ -54,6 +54,31 @@ class MyClient(discord.Client):
         if message.content.find('?HOST') == 0:
             await message.channel.send(API_HOST)
 
+        if message.content.find('?DEVICE') == 0:
+            device_id_name = list()
+            for deviceId in DeviceStore:
+                deviceName = DeviceStore[deviceId]['deviceName']
+                device_id_name.append('ID: {0} , NAME: {1}'.format(deviceId, deviceName))
+            if len(device_id_name) == 0:
+                await message.channel.send('No devices is active')
+            else:
+                await message.channel.send('\n'.join(device_id_name))
+
+        if message.content.find('!ALERT') == 0:
+            try:
+                mathIcon = ['>', '>=', '=', '<=', '<']
+                arg_list = message.content.split(' ')[1:]
+                deviceId = arg_list[0]
+                triggerRule = arg_list[1]
+                if triggerRule not in mathIcon:
+                    raise SyntaxError("[FAIL] I hope these math icons " + str(mathIcon))
+                triggerValue = float(arg_list[2])
+            except:
+                await message.channel.send("請使用此格式\n!ALERT [Device ID] {0} [Vlaue]".format(str(mathIcon).replace("'", "").replace(", ", "/")))
+                return
+            DeviceStore[deviceId]['triggerRule'] = triggerRule
+            DeviceStore[deviceId]['triggerValue'] = triggerValue
+
         if message.content.find('!SAY') == 0:
             text = message.content.split(' ', 1)[1]
             channel = client.get_channel(clannelId_onTest)
@@ -119,7 +144,7 @@ class MyClient(discord.Client):
                 functionArg = message.content.split(' ', 1)[1]
             except IndexError:
                 functionArg = None
-            result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments)
+            result = discord_bot_lib.exeFunction(functionType, functionArg, message.attachments, msgObj=message)
             if 'processes' in result:
                 process = result['processes']
                 channelId = message.channel.id
@@ -164,20 +189,74 @@ def message_user():
     return 'OK', 200
 
 DeviceStore = dict()
+AlertThreads = list()
+def alert_trigger(deviceId):
+    name = DeviceStore[deviceId]['deviceName']
+    vlaue = DeviceStore[deviceId]['value']
+    t_rule = DeviceStore[deviceId]['triggerRule']
+    t_value = DeviceStore[deviceId]['triggerValue']
+    client.loop.create_task(
+        client.send_DM(userId_owner, '[Alert] 裝置 <{name}> 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals()))
+    )
+
+def alert_thread(deviceId):
+    while True:
+        delayTime = 3
+        if deviceId not in DeviceStore:  # will stop this Thread
+            break
+        if 'triggerRule' in DeviceStore[deviceId]:
+            triggerRule = DeviceStore[deviceId]['triggerRule']
+            triggerValue = DeviceStore[deviceId]['triggerValue']
+            value = DeviceStore[deviceId]['value']
+            if triggerRule == '>':
+                if value > triggerValue:
+                    alert_trigger(deviceId)
+                    delayTime = 60
+            elif triggerRule == '>=':
+                if value >= triggerValue:
+                    alert_trigger(deviceId)
+                    delayTime = 60
+            elif triggerRule == '=':
+                if value == triggerValue:
+                    alert_trigger(deviceId)
+                    delayTime = 60
+            elif triggerRule == '<=':
+                if value <= triggerValue:
+                    alert_trigger(deviceId)
+                    delayTime = 60
+            elif triggerRule == '<':
+                if value < triggerValue:
+                    alert_trigger(deviceId)
+                    delayTime = 60
+        time.sleep(delayTime)
 
 @endPoint.route("/device/<deviceId>", methods=["POST"])
 def device_post(deviceId):
     data = request.json
-    DeviceStore[deviceId] = data['setData']
+    if deviceId not in DeviceStore:
+        DeviceStore[deviceId] = data['setData']
+        alertThread = threading.Thread(target=alert_thread, args=(deviceId,))
+        AlertThreads.append(alertThread)
+        alertThread.start()
+    else:
+        for key in data['setData']:
+            DeviceStore[deviceId][key] = data['setData'][key]
     deviceData = DeviceStore[deviceId]
     return jsonify({'currentData': deviceData}), 200
 
 @endPoint.route("/device/<deviceId>", methods=["GET"])
 def device_get(deviceId):
     if deviceId not in DeviceStore:
-        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 204
+        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 202
     deviceData = DeviceStore[deviceId]
     return jsonify({'currentData': deviceData}), 200
+
+@endPoint.route("/device/<deviceId>", methods=["DELETE"])
+def device_delete(deviceId):
+    if deviceId not in DeviceStore:
+        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 202
+    del DeviceStore[deviceId]
+    return '', 204
 
 
 async def start():

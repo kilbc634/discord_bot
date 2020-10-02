@@ -135,8 +135,8 @@ void loop() {
     http.addHeader("Content-Type", "application/json");
     DynamicJsonDocument setData(1024);
     setData["deviceName"] = "魚缸水位";
-    setData["waterValue"] = sample_avg;
-    setData["waterUnit"] = "cm";
+    setData["value"] = sample_avg;
+    setData["unit"] = "cm";
     DynamicJsonDocument root(1024);
     root["setData"] = setData;
     String jsonStr;
