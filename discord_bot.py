@@ -58,7 +58,7 @@ class MyClient(discord.Client):
             device_id_name = list()
             for deviceId in DeviceStore:
                 deviceName = DeviceStore[deviceId]['deviceName']
-                device_id_name.append('ID: {0} , NAME: {1}'.format(deviceId, deviceName))
+                device_id_name.append('ID: {0}, NAME: {1}'.format(deviceId, deviceName))
             if len(device_id_name) == 0:
                 await message.channel.send('No devices is active')
             else:
@@ -74,10 +74,53 @@ class MyClient(discord.Client):
                     raise SyntaxError("[FAIL] I hope these math icons " + str(mathIcon))
                 triggerValue = float(arg_list[2])
             except:
-                await message.channel.send("請使用此格式\n!ALERT [Device ID] {0} [Vlaue]".format(str(mathIcon).replace("'", "").replace(", ", "/")))
+                await message.channel.send("請使用此格式\n!ALERT [Device ID] {0} [Vlaue]\n(刪除警報則使用 !R_ALERT 指令)".format(str(mathIcon).replace("'", "").replace(", ", "/")))
                 return
+            if deviceId not in DeviceStore:
+                await message.channel.send("該裝置不存在")
+                return
+            DeviceStore[deviceId]['triggerEnable'] = True
             DeviceStore[deviceId]['triggerRule'] = triggerRule
             DeviceStore[deviceId]['triggerValue'] = triggerValue
+            await message.channel.send("裝置 {0}({1}) 警報設定完成".format(deviceId, DeviceStore[deviceId]['deviceName']))
+
+        if message.content.find('!R_ALERT') == 0:
+            try:
+                arg_list = message.content.split(' ')[1:]
+                deviceId = arg_list[0]
+            except:
+                await message.channel.send("請使用此格式\n!R_ALERT [Device ID]")
+                return
+            if deviceId not in DeviceStore:
+                await message.channel.send("該裝置不存在")
+                return
+            try:
+                del DeviceStore[deviceId]['triggerEnable']
+                del DeviceStore[deviceId]['triggerRule']
+                del DeviceStore[deviceId]['triggerValue']
+            except KeyError:
+                await message.channel.send("裝置 {0}({1}) 警報尚未設定".format(deviceId, DeviceStore[deviceId]['deviceName']))
+                return
+            await message.channel.send("裝置 {0}({1}) 警報已被刪除".format(deviceId, DeviceStore[deviceId]['deviceName']))
+
+        if message.content.find('?ALERT') == 0:
+            try:
+                arg_list = message.content.split(' ')[1:]
+                deviceId = arg_list[0]
+            except:
+                await message.channel.send("請使用此格式\n?ALERT [Device ID]")
+                return
+            if deviceId not in DeviceStore:
+                await message.channel.send("該裝置不存在")
+                return
+            if 'triggerEnable' not in DeviceStore[deviceId]:
+                await message.channel.send("裝置 {0}({1}) 警報尚未設定".format(deviceId, DeviceStore[deviceId]['deviceName']))
+            else:
+                t_rule = DeviceStore[deviceId]['triggerRule']
+                t_value = DeviceStore[deviceId]['triggerValue']
+                await message.channel.send(
+                    '警報觸發規則: (當前數值) {t_rule} {t_value}'.format(**locals())
+                )
 
         if message.content.find('!SAY') == 0:
             text = message.content.split(' ', 1)[1]
@@ -196,7 +239,7 @@ def alert_trigger(deviceId):
     t_rule = DeviceStore[deviceId]['triggerRule']
     t_value = DeviceStore[deviceId]['triggerValue']
     client.loop.create_task(
-        client.send_DM(userId_owner, '[Alert] 裝置 <{name}> 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals()))
+        client.send_DM(userId_owner, '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals()))
     )
 
 def alert_thread(deviceId):
@@ -204,30 +247,46 @@ def alert_thread(deviceId):
         delayTime = 3
         if deviceId not in DeviceStore:  # will stop this Thread
             break
-        if 'triggerRule' in DeviceStore[deviceId]:
+        if 'triggerEnable' in DeviceStore[deviceId]:
+            triggerEnable = DeviceStore[deviceId]['triggerEnable']
             triggerRule = DeviceStore[deviceId]['triggerRule']
             triggerValue = DeviceStore[deviceId]['triggerValue']
             value = DeviceStore[deviceId]['value']
             if triggerRule == '>':
                 if value > triggerValue:
-                    alert_trigger(deviceId)
-                    delayTime = 60
+                    if triggerEnable:
+                        alert_trigger(deviceId)
+                        delayTime = 60
+                else:
+                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '>=':
                 if value >= triggerValue:
-                    alert_trigger(deviceId)
-                    delayTime = 60
+                    if triggerEnable:
+                        alert_trigger(deviceId)
+                        delayTime = 60
+                else:
+                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '=':
                 if value == triggerValue:
-                    alert_trigger(deviceId)
-                    delayTime = 60
+                    if triggerEnable:
+                        alert_trigger(deviceId)
+                        delayTime = 60
+                else:
+                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '<=':
                 if value <= triggerValue:
-                    alert_trigger(deviceId)
-                    delayTime = 60
+                    if triggerEnable:
+                        alert_trigger(deviceId)
+                        delayTime = 60
+                else:
+                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '<':
                 if value < triggerValue:
-                    alert_trigger(deviceId)
-                    delayTime = 60
+                    if triggerEnable:
+                        alert_trigger(deviceId)
+                        delayTime = 60
+                else:
+                    DeviceStore[deviceId]['triggerEnable'] = True
         time.sleep(delayTime)
 
 @endPoint.route("/device/<deviceId>", methods=["POST"])

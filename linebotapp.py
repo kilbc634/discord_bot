@@ -11,7 +11,6 @@ line_bot_api = LineBotApi('bdEbnCAgdSE65B3/+Jha1LPxjUh/22T65vgOQjdmrJr/XdSQUAFHu
 handler = WebhookHandler('e6cc86689e3d9ca94205754ad263d268')
 
 
-# 接收 LINE 的資訊
 @app.route("/callback", methods=['POST'])
 def callback():
     signature = request.headers['X-Line-Signature']
@@ -28,7 +27,6 @@ def callback():
 
     return 'OK'
 
-# 學你說話
 @handler.add(MessageEvent, message=TextMessage)
 def pretty_echo(event):
     pretty_text = 'test'
