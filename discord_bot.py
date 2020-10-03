@@ -238,8 +238,14 @@ def alert_trigger(deviceId):
     vlaue = DeviceStore[deviceId]['value']
     t_rule = DeviceStore[deviceId]['triggerRule']
     t_value = DeviceStore[deviceId]['triggerValue']
+    alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals())
+    ## for discord bot
     client.loop.create_task(
-        client.send_DM(userId_owner, '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals()))
+        client.send_DM(userId_owner, alert_text)
+    )
+    ## for line bot
+    requests.post(LINE_HOST + '/report_group/' + linebotapp.groupId_reporter,
+        json={"message": alert_text}
     )
 
 def alert_thread(deviceId):
@@ -315,6 +321,20 @@ def device_delete(deviceId):
     if deviceId not in DeviceStore:
         return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 202
     del DeviceStore[deviceId]
+    return '', 204
+
+@endPoint.route("/device_store", methods=["GET"])
+def device_all():
+    return jsonify(DeviceStore), 200
+
+@endPoint.route("/alert_remove/<deviceId>", methods=["GET"])
+def alert_remove(deviceId):
+    try:
+        del DeviceStore[deviceId]['triggerEnable']
+        del DeviceStore[deviceId]['triggerRule']
+        del DeviceStore[deviceId]['triggerValue']
+    except KeyError:
+        pass
     return '', 204
 
 
