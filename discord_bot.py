@@ -244,7 +244,7 @@ def alert_trigger(deviceId):
         client.send_DM(userId_owner, alert_text)
     )
     ## for line bot
-    requests.post(LINE_HOST + '/report_group/' + linebotapp.groupId_reporter,
+    requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
         json={"message": alert_text}
     )
 

@@ -35,6 +35,24 @@ def report_group(groupId):
     )
     return 'OK', 200
 
+@app.route("/alert_group/<groupId>", methods=['POST'])
+def alert_group(groupId):
+    data = request.json
+    msg = data['message']
+    line_bot_api.push_message(
+        groupId,
+        TextSendMessage(text='==========')
+    )
+    line_bot_api.push_message(
+        groupId,
+        TextSendMessage(text=msg)
+    )
+    line_bot_api.push_message(
+        groupId,
+        TextSendMessage(text='==========')
+    )
+    return 'OK', 200
+
 def get_device_store():
     resp = requests.get('http://127.0.0.1:21090/device_store')
     return resp.json()
