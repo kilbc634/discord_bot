@@ -329,6 +329,7 @@ def check_timeout(deviceId, timeout=60):
 @endPoint.route("/device/<deviceId>", methods=["POST"])
 def device_post(deviceId):
     data = request.json
+    data['setData']['value'] = float(data['setData']['value'])  # string to float for device value
     if deviceId not in DeviceStore:
         DeviceStore[deviceId] = data['setData']
         DeviceStore[deviceId]['timestamp'] = get_timestamp()

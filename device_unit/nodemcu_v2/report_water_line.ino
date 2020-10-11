@@ -78,9 +78,9 @@ void lighting(int time_ms) {
 
 float set_decimal_place(float value_intput, int decimalPlace) {
   float vlaue_output;
-  long cut_vlaue = pow(10, decimalPlace);
+  float cut_vlaue = pow(10, decimalPlace);
   long temp = value_intput * cut_vlaue;
-  vlaue_output = temp / cut_vlaue;
+  vlaue_output = (float)temp / cut_vlaue;
   return vlaue_output;
 }
 
@@ -125,8 +125,11 @@ void loop() {
   for (int index = sampleCutOffLen; index < sampleRate - sampleCutOffLen; index++) {
     sample_sum += sample_list[index];
   }
-  float sample_avg_temp = sample_sum / (sampleRate - sampleCutOffLen * 2);
+  float sample_avg_temp = sample_sum / (float)(sampleRate - sampleCutOffLen * 2);
   float sample_avg = set_decimal_place(sample_avg_temp, 2);
+  String sample_avg_str;
+  sample_avg_str = String(sample_avg);
+  Serial.println("sample_avg = " + sample_avg_str);
   // Send value to server
   if ((WiFi.status() == WL_CONNECTED)){
     WiFiClient client;
@@ -135,7 +138,7 @@ void loop() {
     http.addHeader("Content-Type", "application/json");
     DynamicJsonDocument setData(1024);
     setData["deviceName"] = "魚缸水位";
-    setData["value"] = sample_avg;
+    setData["value"] = sample_avg_str;
     setData["unit"] = "cm";
     DynamicJsonDocument root(1024);
     root["setData"] = setData;
