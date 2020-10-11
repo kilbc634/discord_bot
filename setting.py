@@ -10,3 +10,5 @@ FB_NAME = os.getenv('FB_NAME', '七波 シロネ')
 FB_GROUP = os.getenv('FB_GROUP', '暫時不知道做什麼用的社團')
 # LINE BOT
 LINE_HOST = os.getenv('LINE_HOST', 'https://linebotfortsukumo.ddns.net:21190')
+LINE_SECRET = os.getenv('LINE_SECRET', '***')
+LINE_TOKEN = os.getenv('LINE_TOKEN', '***')

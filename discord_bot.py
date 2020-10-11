@@ -13,6 +13,7 @@ import asyncio
 import connect_server
 import linebotapp
 from setting import *
+from datetime import datetime, timezone, timedelta
 
 client = None
 endPoint = Flask('extraService')
@@ -248,7 +249,23 @@ def alert_trigger(deviceId):
         json={"message": alert_text}
     )
 
+def timeout_trigger(deviceId, timeout_status=True):
+    name = DeviceStore[deviceId]['deviceName']
+    if timeout_status:
+        alert_text = '[Timeout] 裝置 <{deviceId}>({name}) 失去回應!'.format(**locals())
+    else:
+        alert_text = '[Timeout] 裝置 <{deviceId}>({name}) 恢復回應!'.format(**locals())
+    ## for discord bot
+    client.loop.create_task(
+        client.send_DM(userId_owner, alert_text)
+    )
+    ## for line bot
+    requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
+        json={"message": alert_text}
+    )
+
 def alert_thread(deviceId):
+    timeouted = False
     while True:
         delayTime = 3
         if deviceId not in DeviceStore:  # will stop this Thread
@@ -263,47 +280,63 @@ def alert_thread(deviceId):
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
-                else:
-                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '>=':
                 if value >= triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
-                else:
-                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '=':
                 if value == triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
-                else:
-                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '<=':
                 if value <= triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
-                else:
-                    DeviceStore[deviceId]['triggerEnable'] = True
             elif triggerRule == '<':
                 if value < triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
-                else:
-                    DeviceStore[deviceId]['triggerEnable'] = True
+        if check_timeout(deviceId):
+            timeout_trigger(deviceId)
+            timeouted = True
+            if 'triggerEnable' in DeviceStore[deviceId]:
+                DeviceStore[deviceId]['triggerEnable'] = False
+            delayTime = 3
+        elif timeouted:
+            timeout_trigger(deviceId, timeout_status=False)
+            timeouted = False
+            if 'triggerEnable' in DeviceStore[deviceId]:
+                DeviceStore[deviceId]['triggerEnable'] = True
+            delayTime = 3
         time.sleep(delayTime)
+
+def get_timestamp(utc=8):
+    dt_now = datetime.now(tz=timezone(timedelta(hours=utc)))
+    return int(dt_now.timestamp())
+
+def check_timeout(deviceId, timeout=60):
+    timestamp = DeviceStore[deviceId]['timestamp']
+    now = get_timestamp()
+    if now > int(timestamp) + timeout:
+        return True
+    else:
+        return False
 
 @endPoint.route("/device/<deviceId>", methods=["POST"])
 def device_post(deviceId):
     data = request.json
     if deviceId not in DeviceStore:
         DeviceStore[deviceId] = data['setData']
+        DeviceStore[deviceId]['timestamp'] = get_timestamp()
         alertThread = threading.Thread(target=alert_thread, args=(deviceId,))
         AlertThreads.append(alertThread)
         alertThread.start()
     else:
+        DeviceStore[deviceId]['timestamp'] = get_timestamp()
         for key in data['setData']:
             DeviceStore[deviceId][key] = data['setData'][key]
     deviceData = DeviceStore[deviceId]

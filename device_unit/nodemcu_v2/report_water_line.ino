@@ -90,7 +90,7 @@ float echo_sensor() {
   digitalWrite(trigPin, LOW);
   long duration;
   duration = pulseIn(echoPin, HIGH);   // 收到高電位時的時間
-  float cm = (duration/2.0) / 29.1;         // 將時間換算成距離 cm
+  float cm = ((float)duration / 2.0) / 29.1;         // 將時間換算成距離 cm
   Serial.print(cm);
   Serial.println("cm");
   return cm;
