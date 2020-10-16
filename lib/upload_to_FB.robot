@@ -36,7 +36,7 @@ SuiteSetup
     ...    Set Suite Variable    ${chromedriverPath}    ${WORKDIR}/lib/chromedriver_linux
     ${driver}=    Create Webdriver    Chrome    options=${options}    executable_path=${chromedriverPath}
     Go To     https://zh-tw.facebook.com/
-    Create Session    connectServer    http://127.0.0.1:21099
+    Create Session    connectServer    http://127.0.0.1:21090
     ${resp} =    Get Data Via Endpoint API    ${callNode}
     Set Suite Variable    ${postMessage}    ${resp['data']['nodeContent']['message']}
     ${len} =    Get Length    ${resp['data']['nodeContent']['image']}

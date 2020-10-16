@@ -68,6 +68,6 @@ Click Send Post Button
 Get Data Via Endpoint API
     [Documentation]    Use call node to get data via endpoint api
     [Arguments]    ${nodeName}
-    ${resp} =    Get Request    connectServer    /endpoint/call/${nodeName}
+    ${resp} =    Get Request    connectServer    /tempdata/call/${nodeName}
     Dictionary Should Contain Key    ${resp.json()}    data
     [Return]    ${resp.json()}

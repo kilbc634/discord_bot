@@ -14,7 +14,7 @@ def exeFunction(functionType, functionArg=None, attachments=list()):
             endpointData['image'] = attachments[0].url
         else:
             endpointData['image'] = ''
-        res = requests.post('http://127.0.0.1:21099/endpoint/create/{nodeName}'.format(**locals()), json=endpointData)
+        res = requests.post('http://127.0.0.1:21090/tempdata/create/{nodeName}'.format(**locals()), json=endpointData)
 
         # run robot to send post on FB page
         myDir = os.getcwd()
