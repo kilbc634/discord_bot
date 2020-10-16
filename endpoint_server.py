@@ -3,10 +3,12 @@ from flask import Flask, jsonify, request, send_from_directory
 import threading
 import requests
 from datetime import datetime, timezone, timedelta
-from discord_bot import client as DiscordClient
-from discord_bot import userId_owner
+import time
+from setting import *
+import linebotapp
 
 EndPoint = Flask('EndPoint')
+DiscordClient = None
 
 @EndPoint.route("/")
 def welcome():
@@ -163,7 +165,7 @@ def device_delete(deviceId):
 def device_all():
     return jsonify(DeviceStore), 200
 
-@endPoint.route("/alert_remove/<deviceId>", methods=["GET"])
+@EndPoint.route("/alert_remove/<deviceId>", methods=["GET"])
 def alert_remove(deviceId):
     try:
         del DeviceStore[deviceId]['triggerEnable']
@@ -227,8 +229,13 @@ def view_report(path):
 
 #############################################################
 
-def run():
+def run(baseClient=None):
+    global DiscordClient
+    if baseClient:
+        DiscordClient = baseClient
     EndPoint.run(host='0.0.0.0', debug=True, port=21090, use_reloader=False)
 
 if __name__=='__main__':
     run()
+else:
+    from discord_bot import userId_owner

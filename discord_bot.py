@@ -4,10 +4,10 @@ from lib import discord_bot_lib
 import os
 import threading
 import asyncio
-import endpoint_server
-from endpoint_server import DeviceStore, AlertThreads
 import linebotapp
 from setting import *
+import endpoint_server
+from endpoint_server import DeviceStore, AlertThreads
 
 client = None
 Affect_channels = ['bot乱交', '車']
@@ -207,12 +207,12 @@ async def start():
     await client.start(TOKEN)
 
 if __name__=='__main__':
-    thread1 = threading.Thread(target=endpoint_server.run)
+    client = MyClient()
+    thread1 = threading.Thread(target=endpoint_server.run, args=(client,))
     thread1.start()
     thread2 = threading.Thread(target=linebotapp.run)
     thread2.start()
 
-    client = MyClient()
     loop = asyncio.get_event_loop()
     loop.create_task(start())
     loop.run_forever()
