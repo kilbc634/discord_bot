@@ -6,6 +6,7 @@ from datetime import datetime, timezone, timedelta
 import time
 from setting import *
 import linebotapp
+import traceback
 
 EndPoint = Flask('EndPoint')
 DiscordClient = None
@@ -21,10 +22,10 @@ def message_user():
     user = data['user']
     message = data['message']
     if user == 'me':
-        userId = userId_owner
+        userId = DiscordClient.UserId_Owner
     else:
         userId = int(user)
-    DiscordClient.loop.create_task(DiscordClient.send_DM(userId, 'from {sender}:\n{message}'.format(**locals())))
+    DiscordClient.loop.create_task(DiscordClient.send_message_with_userId(userId, 'from {sender}:\n{message}'.format(**locals())))
     return 'OK', 200
 
 #############################################################
@@ -54,14 +55,17 @@ def alert_trigger(deviceId):
     t_rule = DeviceStore[deviceId]['triggerRule']
     t_value = DeviceStore[deviceId]['triggerValue']
     alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals())
-    ## for discord bot
-    DiscordClient.loop.create_task(
-        DiscordClient.send_DM(userId_owner, alert_text)
-    )
-    ## for line bot
-    requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
-        json={"message": alert_text}
-    )
+    try:
+        ## for discord bot
+        DiscordClient.loop.create_task(
+            DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
+        )
+        ## for line bot
+        requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
+            json={"message": alert_text}
+        )
+    except:
+        traceback.print_exc()
 
 def timeout_trigger(deviceId, timeout_status=True):
     name = DeviceStore[deviceId]['deviceName']
@@ -69,14 +73,17 @@ def timeout_trigger(deviceId, timeout_status=True):
         alert_text = '[Timeout] 裝置 <{deviceId}>({name}) 失去回應!'.format(**locals())
     else:
         alert_text = '[Timeout] 裝置 <{deviceId}>({name}) 恢復回應!'.format(**locals())
-    ## for discord bot
-    DiscordClient.loop.create_task(
-        DiscordClient.send_DM(userId_owner, alert_text)
-    )
-    ## for line bot
-    requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
-        json={"message": alert_text}
-    )
+    try:
+        ## for discord bot
+        DiscordClient.loop.create_task(
+            DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
+        )
+        ## for line bot
+        requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
+            json={"message": alert_text}
+        )
+    except:
+        traceback.print_exc()
 
 def alert_thread(deviceId):
     timeouted = False
@@ -137,7 +144,7 @@ def device_post(deviceId):
     if deviceId not in DeviceStore:
         DeviceStore[deviceId] = data['setData']
         DeviceStore[deviceId]['timestamp'] = get_timestamp()
-        alertThread = threading.Thread(target=alert_thread, args=(deviceId,))
+        alertThread = threading.Thread(target=alert_thread, args=(deviceId,), daemon=True)
         AlertThreads.append(alertThread)
         alertThread.start()
     else:
@@ -237,5 +244,3 @@ def run(baseClient=None):
 
 if __name__=='__main__':
     run()
-else:
-    from discord_bot import userId_owner
