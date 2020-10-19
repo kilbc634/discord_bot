@@ -1,1 +1,4 @@
-這是一個 Discord 和 Facebook 交互的 bot
+# My application summary: #
+![](https://i.imgur.com/Dy0xRSU.png)
+# Demo: #
+(coming soon)
