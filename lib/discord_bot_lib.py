@@ -18,7 +18,7 @@ FunctionInfo = {
     "?ALERT": "Format:\n!?ALERT [device ID]",
     "?MEMBER_LIST": "Format:\n?MEMBER_LIST",
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
-    "!開車": "Format:\n!開車 [message] (Optional: upload one image file)"
+    "!PO": "Format:\n!PO [message] (Optional: upload one image file)"
 }
 
 def check_function(content):
@@ -139,7 +139,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             channelsList.append('{channelName} ({channelId}) IN <<{channelGuild}>>'.format(**locals()))
         output['text'] = '\n'.join(channelsList)
 
-    elif functionHeader == '!開車':
+    elif functionHeader == '!PO':
         text = functionArgs[0]
         atts = attachments
         # create node data

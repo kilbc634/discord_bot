@@ -52,12 +52,12 @@ Typeing Message On Post Area
 Upload Image To Post Area
     [Documentation]    Upload image to post area
     [Arguments]    ${attachments}
-    Wait Until Element Is Visible    //i[@class="hu5pjgll bixrwtb6 sp_XRoMnlkJWss sx_63c3b4"]
-    Click Element    //i[@class="hu5pjgll bixrwtb6 sp_XRoMnlkJWss sx_63c3b4"]
+    Wait Until Element Is Visible    //i[@class="hu5pjgll bixrwtb6 sp_VEhA-MZnfiU sx_fa57cb"]
+    Click Element    //i[@class="hu5pjgll bixrwtb6 sp_VEhA-MZnfiU sx_fa57cb"]
     Wait Until Page Contains Element    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]
     Choose File    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]    ${attachments[0]}
-    Wait Until Element Is Visible    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//i[@class="hu5pjgll m6k467ps sp_6vYwcjvw5IC sx_971d14"]
-    Click Element    //div[@class="j83agx80 cbu4d94t lzcic4wl ni8dbmo4 stjgntxs oqq733wu l9j0dhe7 du4w35lb cwj9ozl2 ue3kfks5 pw54ja7n uo3d90p7 l82x9zwi nwpbqux9"][@role="dialog"]//i[@class="hu5pjgll m6k467ps sp_6vYwcjvw5IC sx_971d14"]
+    Wait Until Element Is Visible    //div[@class="fcg2cn6m re5koujm pmk7jnqg"]/div[@role="button"]
+    Click Element    //div[@class="fcg2cn6m re5koujm pmk7jnqg"]/div[@role="button"]
 
 Click Send Post Button
     [Documentation]    Click send post button
