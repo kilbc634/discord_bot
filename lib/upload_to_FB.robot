@@ -19,6 +19,7 @@ Upload to HU group by user acconut
     ${attachmentsLen} =    Get Length    ${postAttachments}
     Run Keyword If    ${attachmentsLen} > ${0}    Upload Image To Post Area    ${postAttachments}
     Click Send Post Button
+    [Teardown]    Run Keyword If Test Failed    Save Current Page
 
 *** Keywords ***
 SuiteSetup
@@ -55,3 +56,7 @@ Download And Save Image To Local
 Set Empty List
     @{list} =    Create List
     Set Suite Variable    ${postAttachments}    ${list}
+
+Save Current Page
+    ${source} =    Get Source
+    Create File    ${WORKDIR}/report/source.html    ${source}
