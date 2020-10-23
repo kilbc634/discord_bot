@@ -4,6 +4,7 @@ import os
 import time
 import threading
 import requests
+from lxml import etree
 from setting import *
 from endpoint_server import DeviceStore, AlertThreads
 
@@ -158,9 +159,10 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         channelId = messageObj.channel.id
         def wait_robot_complated(process, reportChannelId=None):
             returncode = process.wait()
+            status, emoji = get_report_status()
             if reportChannelId:
                 fileUrl = API_HOST + '/report/log.html'
-                reportText = 'Robot complated\nreport log: {fileUrl}'.format(fileUrl=fileUrl)
+                reportText = '{emoji} Robot complated [ {status} ]\nreport log: {fileUrl}'.format(**locals())
                 client.loop.create_task(
                     client.send_message_with_channelId(reportChannelId, reportText)
                 )
@@ -180,3 +182,13 @@ def system_command(command):
 
 def help_message():
     return '\n'.join(FunctionInfo)
+
+def get_report_status():
+    myDir = os.getcwd()
+    doc = etree.parse(myDir + '/report/output.xml')
+    failedTestCount_element = doc.xpath('//statistics/total/stat[text()="All Tests"]')[0]
+    failedTestCount = int(failedTestCount_element.get("fail"))
+    if failedTestCount > 0:
+        return 'FAIL', ':x:'
+    else:
+        return 'PASS', ':white_check_mark:'

@@ -52,8 +52,8 @@ Typeing Message On Post Area
 Upload Image To Post Area
     [Documentation]    Upload image to post area
     [Arguments]    ${attachments}
-    Wait Until Element Is Visible    //i[@class="hu5pjgll bixrwtb6 sp_VEhA-MZnfiU sx_fa57cb"]
-    Click Element    //i[@class="hu5pjgll bixrwtb6 sp_VEhA-MZnfiU sx_fa57cb"]
+    Wait Until Element Is Visible    //*[@id="toolbarLabel"]/parent::div//div[@class="dwxx2s2f dicw6rsg kady6ibp rs0gx3tq"][5]
+    Click Element    //*[@id="toolbarLabel"]/parent::div//div[@class="dwxx2s2f dicw6rsg kady6ibp rs0gx3tq"][5]
     Wait Until Page Contains Element    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]
     Choose File    //div[@class="n99xedck ecm0bbzt e5nlhep0"]/input[contains(@accept, image/*)]    ${attachments[0]}
     Wait Until Element Is Visible    //div[@class="fcg2cn6m re5koujm pmk7jnqg"]/div[@role="button"]
