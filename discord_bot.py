@@ -43,6 +43,7 @@ class MyClient(discord.Client):
             print('Logged on as', self.user)
         except UnicodeEncodeError:
             print('Logged on as ***UnicodeEncodeError***')
+        await client.change_presence(activity=discord.Game(name='?HELP'))
 
     async def send_message_with_userId(self, userId, text, att=None):
         channel = client.get_user(userId)

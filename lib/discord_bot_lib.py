@@ -9,7 +9,7 @@ from setting import *
 from endpoint_server import DeviceStore, AlertThreads
 
 FunctionInfo = {
-    "?HELP": "Format:\n?HELP",
+    "?HELP": "Format:\n?HELP [(Optional: command)]",
     "!CMD": "Format:\n!CMD [logout|(etc...)]",
     "?HOST": "Format:\n?HOST",
     "!SAY": "Format:\n!SAY [message]",
@@ -19,7 +19,7 @@ FunctionInfo = {
     "?ALERT": "Format:\n!?ALERT [device ID]",
     "?MEMBER_LIST": "Format:\n?MEMBER_LIST",
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
-    "!PO": "Format:\n!PO [message] (Optional: upload one image file)"
+    "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)"
 }
 
 def check_function(content):
@@ -38,12 +38,18 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         functionArgs = []
 
     if functionHeader == '!CMD':
+        if not admin:
+            output['text'] = '貴方に権限がありません'
+            return output
         res = system_command(functionArgs[0])
         output['text'] = 'ログアウトを実行します...'
 
     elif functionHeader == '?HELP':
-        text = help_message()
-        output['text'] = text
+        helpText = help_message()
+        if len(functionArgs) > 0:
+            if functionArgs[0] in FunctionInfo:
+                helpText = FunctionInfo[functionArgs[0]]
+        output['text'] = helpText
 
     elif functionHeader == '?HOST':
         output['text'] = API_HOST
@@ -66,6 +72,9 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             output['text'] = '\n'.join(device_id_name)
 
     elif functionHeader == '!ALERT':
+        if not admin:
+            output['text'] = '貴方に権限がありません'
+            return output
         try:
             mathIcon = ['>', '>=', '=', '<=', '<']
             deviceId = functionArgs[0]
@@ -85,6 +94,9 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         output['text'] = "裝置 {0}({1}) 警報設定完成".format(deviceId, DeviceStore[deviceId]['deviceName'])
 
     elif functionHeader == '!R_ALERT':
+        if not admin:
+            output['text'] = '貴方に権限がありません'
+            return output
         try:
             deviceId = functionArgs[0]
         except:
