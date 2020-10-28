@@ -2,11 +2,16 @@
 import subprocess
 import os
 import time
+from datetime import datetime, timezone, timedelta
 import threading
 import requests
 from lxml import etree
 from setting import *
-from endpoint_server import DeviceStore, AlertThreads
+from endpoint_server import DeviceStore
+from lib import redis_lib
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 FunctionInfo = {
     "?HELP": "Format:\n?HELP [(Optional: command)]",
@@ -62,14 +67,23 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         output['text'] = '送信しました'
 
     elif functionHeader == '?DEVICE':
-        device_id_name = list()
-        for deviceId in DeviceStore:
-            deviceName = DeviceStore[deviceId]['deviceName']
-            device_id_name.append('ID: {0}, NAME: {1}'.format(deviceId, deviceName))
-        if len(device_id_name) == 0:
-            output['text'] = 'No devices is active'
+        if len(functionArgs) > 0:
+            targetDevice = functionArgs[0]
+            if redis_lib.check_device(targetDevice):
+                imagePath = create_device_data_image(targetDevice)
+                output['file'] = imagePath
+                output['text'] = 'デバイスデータを表示します'
+            else:
+                output['text'] = 'そのデバイスは存在しません'
         else:
-            output['text'] = '\n'.join(device_id_name)
+            device_id_name = list()
+            for deviceId in DeviceStore:
+                deviceName = DeviceStore[deviceId]['deviceName']
+                device_id_name.append('ID: {0}, NAME: {1}'.format(deviceId, deviceName))
+            if len(device_id_name) == 0:
+                output['text'] = 'No devices is active'
+            else:
+                output['text'] = '\n'.join(device_id_name)
 
     elif functionHeader == '!ALERT':
         if not admin:
@@ -86,7 +100,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             output['text'] = "請使用此格式\n!ALERT [Device ID] {0} [Vlaue]\n(刪除警報則使用 !R_ALERT 指令)".format(str(mathIcon).replace("'", "").replace(", ", "/"))
             return output
         if deviceId not in DeviceStore:
-            output['text'] = "該裝置不存在"
+            output['text'] = "そのデバイスは存在しません"
             return output
         DeviceStore[deviceId]['triggerEnable'] = True
         DeviceStore[deviceId]['triggerRule'] = triggerRule
@@ -156,7 +170,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         text = ''.join(functionArgs)
         atts = attachments
         # create node data
-        nodeName = str(time.time())
+        nodeName = str(int(time.time()))
         nodeData = dict()
         nodeData['message'] = text
         if len(atts) > 0:
@@ -204,3 +218,26 @@ def get_report_status():
         return 'FAIL', ':x:'
     else:
         return 'PASS', ':white_check_mark:'
+
+def create_device_data_image(deviceId, folderPath='/res/image/'):
+    savePath = os.getcwd() + folderPath + 'device_{0}_{1}.png'.format(deviceId, str(int(time.time())))
+    valueList = redis_lib.get_device_value(deviceId)
+    x = list()
+    y = list()
+    dt_now = datetime.now(tz=timezone(timedelta(hours=8)))
+    for data in valueList:
+        value = data['value']
+        timestamp = data['timestamp']
+        dt = datetime.fromtimestamp(int(timestamp), tz=timezone(timedelta(hours=8)))
+        if dt_now - dt > timedelta(hours=48):
+            break
+        x.insert(0, dt)
+        y.insert(0, value)
+    plt.plot(x, y)
+    plt.gcf().autofmt_xdate()
+    plt.xlabel('Time')
+    plt.ylabel('cm')
+    plt.title(deviceId)
+    plt.gca().invert_yaxis()
+    plt.savefig(savePath)
+    return savePath

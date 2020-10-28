@@ -3,6 +3,8 @@ import os
 # DISCORD BOT
 TOKEN = os.getenv('BOT_TOKEN', '***')
 API_HOST = os.getenv('API_HOST', 'http://---.---.---.---:21090')
+REDIS_HOST = os.getenv('REDIS_HOST', '172.17.0.1')
+REDIS_AUTH = os.getenv('REDIS_AUTH', '***')
 # ROBOT
 MY_ACCOUNT = os.getenv('MY_ACCOUNT', 'ki***4@gmail.com')
 MY_PASSWORD = os.getenv('MY_PASSWORD', '***')

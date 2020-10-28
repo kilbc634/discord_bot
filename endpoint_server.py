@@ -7,6 +7,7 @@ import time
 from setting import *
 import linebotapp
 import traceback
+from lib import redis_lib
 
 EndPoint = Flask('EndPoint')
 DiscordClient = None
@@ -139,16 +140,18 @@ def alert_thread(deviceId):
 @EndPoint.route("/device/<deviceId>", methods=["POST"])
 def device_post(deviceId):
     data = request.json
+    timestamp = get_timestamp()
     if 'value' in data['setData']:
         data['setData']['value'] = float(data['setData']['value'])  # string to float for device value
+        redis_lib.add_device_value(deviceId, data['setData']['value'], timestamp)
     if deviceId not in DeviceStore:
         DeviceStore[deviceId] = data['setData']
-        DeviceStore[deviceId]['timestamp'] = get_timestamp()
+        DeviceStore[deviceId]['timestamp'] = timestamp
         alertThread = threading.Thread(target=alert_thread, args=(deviceId,), daemon=True)
         AlertThreads.append(alertThread)
         alertThread.start()
     else:
-        DeviceStore[deviceId]['timestamp'] = get_timestamp()
+        DeviceStore[deviceId]['timestamp'] = timestamp
         for key in data['setData']:
             DeviceStore[deviceId][key] = data['setData'][key]
     deviceData = DeviceStore[deviceId]

@@ -105,10 +105,13 @@ class MyClient(discord.Client):
                     )
         
         if response:
+            sendText = None
+            sendFile = None
             if 'text' in response:
-                await message.channel.send(response['text'])
-            # if .... in response:
-            #     Do something......
+                sendText = response['text']
+            if 'file' in response:
+                sendFile = discord.File(response['file'])
+            await message.channel.send(sendText, file=sendFile)
 
 
 async def start():
