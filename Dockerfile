@@ -11,7 +11,7 @@ EXPOSE 443
 EXPOSE 80
 
 ADD ./ ./
-RUN pip3 install -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 # install chrome
 RUN apt update
 RUN apt install -y unzip openjdk-8-jre-headless xvfb libxi6 libgconf-2-4
