@@ -1,6 +1,7 @@
 FROM tuyn76801/ubuntu-18.04:200820
 ENV APP_NAME="discord_bot"
 ENV LANG="C.UTF-8"
+# install Chinese fonts for FaceBook web page
 RUN apt install -y fonts-wqy-*
 RUN fc-cache -f -v
 WORKDIR /home/${APP_NAME}

@@ -2,15 +2,15 @@
 Login FB For Normal Interface
     [Documentation]    Login FB for normal interface (blue face)
     Wait Until Element Is Visible    //input[@data-testid="royal_email"]
-    Input Text    //input[@data-testid="royal_email"]    ${MY_ACCOUNT}
-    Input Text    //input[@data-testid="royal_pass"]    ${MY_PASSWORD}
+    Input Text    //input[@data-testid="royal_email"]    ${FB_ACCOUNT}
+    Input Text    //input[@data-testid="royal_pass"]    ${FB_PASSWORD}
     Click Element    //button[@data-testid="royal_login_button"]
 
 Login FB For Another Interface
     [Documentation]    Login FB for another interface (white face)
     Wait Until Element Is Visible    //input[@name="email"]/parent::div
-    Input Text    //input[@name="email"]    ${MY_ACCOUNT}
-    Input Text    //input[@name="pass"]    ${MY_PASSWORD}
+    Input Text    //input[@name="email"]    ${FB_ACCOUNT}
+    Input Text    //input[@name="pass"]    ${FB_PASSWORD}
     Click Element    //button[@name="login"]
 
 Login FB
