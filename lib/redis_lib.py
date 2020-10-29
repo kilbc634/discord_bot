@@ -13,7 +13,7 @@ def add_device_value(deviceId, value, timestamp):
     data['value'] = value
     data['timestamp'] = timestamp
     resp = RedisClient.lpush('device/' + deviceId, data)
-    if resp > 100:
+    if resp > 14400:
         RedisClient.brpop('device/' + deviceId)
 
 def get_device_value(deviceId, start=0, end=-1):

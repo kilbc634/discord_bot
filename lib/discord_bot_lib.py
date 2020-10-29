@@ -233,13 +233,17 @@ def create_device_data_image(deviceId, folderPath='/res/image/'):
             break
         x.insert(0, dt)
         y.insert(0, value)
-    plt.clf()
-    plt.cla()
     plt.plot(x, y)
+    if 'triggerValue' in DeviceStore[deviceId]:
+        plt.axhline(y=DeviceStore[deviceId]['triggerValue'], color='r', linestyle='-')
+        y.append(DeviceStore[deviceId]['triggerValue'])
+    plt.ylim(min(y) - 2.5, max(y) + 2.5)
     plt.gcf().autofmt_xdate()
     plt.xlabel('Time')
     plt.ylabel('cm')
     plt.title(deviceId)
     plt.gca().invert_yaxis()
     plt.savefig(savePath)
+    plt.clf()
+    plt.cla()
     return savePath
