@@ -233,6 +233,8 @@ def create_device_data_image(deviceId, folderPath='/res/image/'):
             break
         x.insert(0, dt)
         y.insert(0, value)
+    plt.clf()
+    plt.cla()
     plt.plot(x, y)
     plt.gcf().autofmt_xdate()
     plt.xlabel('Time')
