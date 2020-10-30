@@ -221,7 +221,7 @@ def get_report_status():
 
 def create_device_data_image(deviceId, folderPath='/res/image/'):
     savePath = os.getcwd() + folderPath + 'device_{0}_{1}.png'.format(deviceId, str(int(time.time())))
-    valueList = redis_lib.get_device_value(deviceId)
+    valueList = redis_lib.get_device_value(deviceId, dataLimit=100)
     x = list()
     y = list()
     dt_now = datetime.now(tz=timezone(timedelta(hours=8)))
@@ -237,10 +237,10 @@ def create_device_data_image(deviceId, folderPath='/res/image/'):
     if 'triggerValue' in DeviceStore[deviceId]:
         plt.axhline(y=DeviceStore[deviceId]['triggerValue'], color='r', linestyle='-')
         y.append(DeviceStore[deviceId]['triggerValue'])
-    plt.ylim(min(y) - 2.5, max(y) + 2.5)
+    plt.ylim(min(y) - 1.0, max(y) + 1.0)
     plt.gcf().autofmt_xdate()
     plt.xlabel('Time')
-    plt.ylabel('cm')
+    plt.ylabel(DeviceStore[deviceId]['unit'])
     plt.title(deviceId)
     plt.gca().invert_yaxis()
     plt.savefig(savePath)
