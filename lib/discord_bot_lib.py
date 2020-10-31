@@ -167,7 +167,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         output['text'] = '\n'.join(channelsList)
 
     elif functionHeader == '!PO':
-        text = ''.join(functionArgs)
+        text = ' '.join(functionArgs)
         atts = attachments
         # create node data
         nodeName = str(int(time.time()))
