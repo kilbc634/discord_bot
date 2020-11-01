@@ -8,6 +8,8 @@ from setting import *
 import linebotapp
 import traceback
 from lib import redis_lib
+import random
+import string
 
 EndPoint = Flask('EndPoint')
 DiscordClient = None
@@ -37,10 +39,20 @@ def message_user():
 
 DeviceStore = dict()
 AlertThreads = list()
+TriggeredSet = dict()
 
 def get_timestamp(utc=8):
     dt_now = datetime.now(tz=timezone(timedelta(hours=utc)))
     return int(dt_now.timestamp())
+
+def generate_triggeredId(deviceId, size=6):
+    uid = str()
+    while True:
+        uid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=size))
+        if uid not in TriggeredSet:
+            break
+    TriggeredSet[uid] = deviceId
+    return uid
 
 def check_timeout(deviceId, timeout=60):
     timestamp = DeviceStore[deviceId]['timestamp']
@@ -55,7 +67,13 @@ def alert_trigger(deviceId):
     vlaue = DeviceStore[deviceId]['value']
     t_rule = DeviceStore[deviceId]['triggerRule']
     t_value = DeviceStore[deviceId]['triggerValue']
-    alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}'.format(**locals())
+    if 'triggeredId' not in DeviceStore[deviceId]:
+        t_Id = generate_triggeredId(deviceId)
+        DeviceStore[deviceId]['triggeredId'] = t_Id
+    else:
+        t_Id = DeviceStore[deviceId]['triggeredId']
+    gotItURL = API_HOST + '/alert_autoset/' + t_Id
+    alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}\n[Got it]\n{gotItURL}'.format(**locals())
     try:
         ## for discord bot
         DiscordClient.loop.create_task(
@@ -102,26 +120,46 @@ def alert_thread(deviceId):
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
+                else:
+                    if 'triggeredId' in DeviceStore[deviceId]:
+                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
+                        del DeviceStore[deviceId]['triggeredId']
             elif triggerRule == '>=':
                 if value >= triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
+                else:
+                    if 'triggeredId' in DeviceStore[deviceId]:
+                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
+                        del DeviceStore[deviceId]['triggeredId']
             elif triggerRule == '=':
                 if value == triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
+                else:
+                    if 'triggeredId' in DeviceStore[deviceId]:
+                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
+                        del DeviceStore[deviceId]['triggeredId']
             elif triggerRule == '<=':
                 if value <= triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
+                else:
+                    if 'triggeredId' in DeviceStore[deviceId]:
+                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
+                        del DeviceStore[deviceId]['triggeredId']
             elif triggerRule == '<':
                 if value < triggerValue:
                     if triggerEnable:
                         alert_trigger(deviceId)
                         delayTime = 60
+                else:
+                    if 'triggeredId' in DeviceStore[deviceId]:
+                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
+                        del DeviceStore[deviceId]['triggeredId']
         if check_timeout(deviceId):
             if timeouted == False:
                 timeout_trigger(deviceId)
@@ -184,6 +222,26 @@ def alert_remove(deviceId):
     except KeyError:
         pass
     return '', 204
+
+@EndPoint.route("/alert_autoset/<triggeredId>", methods=["GET", "POST"])
+def alert_autoset(triggeredId):
+    if triggeredId not in TriggeredSet:
+        return 'Not Found', 200
+    deviceId = TriggeredSet[triggeredId]
+    valueList = redis_lib.get_device_value(deviceId, start=0, end=5)
+    valueSum = 0
+    for data in valueList:
+        valueSum = valueSum + data['value']
+    valueAvg = valueSum / len(valueList)
+    if DeviceStore[deviceId]['triggerRule'] in ['<', '<=']:
+        DeviceStore[deviceId]['triggerValue'] = valueAvg - 1.0
+    elif DeviceStore[deviceId]['triggerRule'] in ['>', '>=']:
+        DeviceStore[deviceId]['triggerValue'] = valueAvg + 1.0
+    else:
+        del DeviceStore[deviceId]['triggerEnable']
+        del DeviceStore[deviceId]['triggerRule']
+        del DeviceStore[deviceId]['triggerValue']
+    return 'Set Complated', 200
 
 #############################################################
 #
