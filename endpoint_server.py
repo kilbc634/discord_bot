@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template
 import threading
 import requests
 from datetime import datetime, timezone, timedelta
@@ -226,7 +226,7 @@ def alert_remove(deviceId):
 @EndPoint.route("/alert_autoset/<triggeredId>", methods=["GET", "POST"])
 def alert_autoset(triggeredId):
     if triggeredId not in TriggeredSet:
-        return 'Not Found', 200
+        return render_template('alert_autoset.html', msg='Alert not triggered')
     deviceId = TriggeredSet[triggeredId]
     valueList = redis_lib.get_device_value(deviceId, start=0, end=5)
     valueSum = 0
@@ -241,7 +241,7 @@ def alert_autoset(triggeredId):
         del DeviceStore[deviceId]['triggerEnable']
         del DeviceStore[deviceId]['triggerRule']
         del DeviceStore[deviceId]['triggerValue']
-    return 'Set Complated', 200
+    return render_template('alert_autoset.html', msg='Set Complated')
 
 #############################################################
 #
