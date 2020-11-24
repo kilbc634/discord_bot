@@ -14,7 +14,7 @@ AffectChannels = ['bot共闘', '車']
 '''
 TextChannel sample:
 --------------------- header ---------------------
-<Message id=766906008865210368 channel=<TextChannel id=643265881996132362 name='bot乱交' position=2 nsfw=False news=False category_id=557482649279528991> type=<MessageType.default: 0> author=<Member id=407554740906360833 name='tuyn76801' discriminator='2063' bot=False nick='芙蕾絲' guild=<Guild id=557482649279528990 name='二萌 會' shard_id=None chunked=True member_count=22>> flags=<MessageFlags value=0>>
+<Message id=766906008865210368 channel=<TextChannel id=643265881996132362 name='bot共闘' position=2 nsfw=False news=False category_id=557482649279528991> type=<MessageType.default: 0> author=<Member id=407554740906360833 name='tuyn76801' discriminator='2063' bot=False nick='芙蕾絲' guild=<Guild id=557482649279528990 name='二萌 會' shard_id=None chunked=True member_count=22>> flags=<MessageFlags value=0>>
 --------------------- content ---------------------
 test massage
 --------------------- attachments -----------------

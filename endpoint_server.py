@@ -223,25 +223,37 @@ def alert_remove(deviceId):
         pass
     return '', 204
 
-@EndPoint.route("/alert_autoset/<triggeredId>", methods=["GET", "POST"])
-def alert_autoset(triggeredId):
+@EndPoint.route("/alert_autoset/<triggeredId>", methods=["POST"])
+def alert_autoset_set(triggeredId):
     if triggeredId not in TriggeredSet:
-        return render_template('alert_autoset.html', msg='Alert not triggered')
+        return jsonify({'msg': 'Alert not triggered'}), 200
     deviceId = TriggeredSet[triggeredId]
     valueList = redis_lib.get_device_value(deviceId, start=0, end=5)
     valueSum = 0
     for data in valueList:
         valueSum = valueSum + data['value']
     valueAvg = valueSum / len(valueList)
+    autoSetValue = None
     if DeviceStore[deviceId]['triggerRule'] in ['<', '<=']:
-        DeviceStore[deviceId]['triggerValue'] = valueAvg - 1.0
+        autoSetValue = round(valueAvg - 1.0, 2)
+        DeviceStore[deviceId]['triggerValue'] = autoSetValue
     elif DeviceStore[deviceId]['triggerRule'] in ['>', '>=']:
-        DeviceStore[deviceId]['triggerValue'] = valueAvg + 1.0
+        autoSetValue = round(valueAvg + 1.0, 2)
+        DeviceStore[deviceId]['triggerValue'] = autoSetValue
     else:
         del DeviceStore[deviceId]['triggerEnable']
         del DeviceStore[deviceId]['triggerRule']
         del DeviceStore[deviceId]['triggerValue']
-    return render_template('alert_autoset.html', msg='Set Complated')
+    return jsonify({'msg': 'Set alert value to <{0}> (for {1})'.format(autoSetValue, deviceId)}), 200
+
+@EndPoint.route("/alert_autoset/<triggeredId>", methods=["GET"])
+def alert_autoset_page(triggeredId):
+    target_msg = ''
+    if triggeredId not in TriggeredSet:
+        target_msg = 'Not found target'
+    else:
+        target_msg = TriggeredSet[triggeredId]
+    return render_template('alert_autoset.html', target_msg=target_msg)
 
 #############################################################
 #
