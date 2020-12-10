@@ -21,7 +21,7 @@ FunctionInfo = {
     "?DEVICE": "Format:\n?DEVICE",
     "!ALERT": "Format:\n!ALERT [device ID] [=|>=|<=|>|<] [vlaue]",
     "!R_ALERT": "Format:\n!R_ALERT [device ID]",
-    "?ALERT": "Format:\n!?ALERT [device ID]",
+    "?ALERT": "Format:\n?ALERT [device ID]",
     "?MEMBER_LIST": "Format:\n?MEMBER_LIST",
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
     "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)"

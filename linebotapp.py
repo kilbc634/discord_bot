@@ -71,14 +71,28 @@ def alert_remove(deviceId):
 def handle_message(event):
     ## for DM
     if event.source.type == 'user':
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=str(event.message.text))
-        )
+        user_name = line_bot_api.get_profile(event.source.user_id).display_name
+        msg_text = event.message.text
+        if msg_text.find('ping') == 0:
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text='pong')
+            )
+        else:
+            data = {
+                'sender': '[LINE] ' + user_name,
+                'user': '407554740906360833',
+                'message': msg_text
+            }
+            resp = requests.post('http://127.0.0.1:21090/message_user', json=data)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text='OK!')
+            )
     ## for group message
     elif event.source.type == 'group':
-        print(event.source)
-        print(dir(event.source))
+        # print(event.source)
+        # print(dir(event.source))
         if event.source.group_id == groupId_reporter:
             msg_text = event.message.text
             if msg_text.find('?裝置') == 0:
