@@ -1,7 +1,15 @@
 # My application summary: #
 ![](https://i.imgur.com/m5OWuyI.png)
 # Demo: #
-(coming soon)
+
+- **FaceBook auto post with Selenium + Discord bot**
+
+	[https://www.youtube.com/watch?v=XPUoL4hOxg0](https://www.youtube.com/watch?v=XPUoL4hOxg0)
+
+- **Simple IoT system for Discord bot + LINE bot**
+
+	[https://www.youtube.com/watch?v=uM9aTpwdBRo](https://www.youtube.com/watch?v=uM9aTpwdBRo)
+
 # Quick start: #
 1. Setup environment for setting.py
 
