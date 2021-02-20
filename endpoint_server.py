@@ -45,13 +45,16 @@ def get_timestamp(utc=8):
     dt_now = datetime.now(tz=timezone(timedelta(hours=utc)))
     return int(dt_now.timestamp())
 
-def generate_triggeredId(deviceId, size=6):
+def generate_triggeredId(deviceId, alertIndex, size=6):
     uid = str()
     while True:
         uid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=size))
         if uid not in TriggeredSet:
             break
-    TriggeredSet[uid] = deviceId
+    TriggeredSet[uid] = {
+        'id': deviceId,
+        'index':  alertIndex
+    }
     return uid
 
 def check_timeout(deviceId, timeout=60):
@@ -62,18 +65,21 @@ def check_timeout(deviceId, timeout=60):
     else:
         return False
 
-def alert_trigger(deviceId):
+def alert_trigger(deviceId, alertIndex):
     name = DeviceStore[deviceId]['deviceName']
     vlaue = DeviceStore[deviceId]['value']
-    t_rule = DeviceStore[deviceId]['triggerRule']
-    t_value = DeviceStore[deviceId]['triggerValue']
-    if 'triggeredId' not in DeviceStore[deviceId]:
-        t_Id = generate_triggeredId(deviceId)
-        DeviceStore[deviceId]['triggeredId'] = t_Id
+    triggerRule = DeviceStore[deviceId]['triggers'][alertIndex]['triggerRule']
+    triggerValue = DeviceStore[deviceId]['triggers'][alertIndex]['triggerValue']
+    if 'triggered' not in DeviceStore[deviceId]:
+        triggeredId = generate_triggeredId(deviceId, alertIndex)
+        DeviceStore[deviceId]['triggered'] = {
+            'id': triggeredId,
+            'index': alertIndex
+        }
     else:
-        t_Id = DeviceStore[deviceId]['triggeredId']
-    gotItURL = API_HOST + '/alert_autoset/' + t_Id
-    alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {t_rule} {t_value}\n[Got it]\n{gotItURL}'.format(**locals())
+        triggeredId = DeviceStore[deviceId]['triggered']['id']
+    gotItURL = API_HOST + '/alert_autoset/' + triggeredId
+    alert_text = '[Alert] 裝置 <{deviceId}>({name}) 被觸發了!\n原因: {vlaue}(當前數值) {triggerRule} {triggerValue}\n[Got it]\n{gotItURL}'.format(**locals())
     try:
         ## for discord bot
         DiscordClient.loop.create_task(
@@ -112,54 +118,67 @@ def alert_thread(deviceId):
             break
         if 'triggerEnable' in DeviceStore[deviceId]:
             triggerEnable = DeviceStore[deviceId]['triggerEnable']
-            triggerRule = DeviceStore[deviceId]['triggerRule']
-            triggerValue = DeviceStore[deviceId]['triggerValue']
             value = DeviceStore[deviceId]['value']
-            if triggerRule == '>':
-                if value > triggerValue:
-                    if triggerEnable:
-                        alert_trigger(deviceId)
-                        delayTime = 60
-                else:
-                    if 'triggeredId' in DeviceStore[deviceId]:
-                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
-                        del DeviceStore[deviceId]['triggeredId']
-            elif triggerRule == '>=':
-                if value >= triggerValue:
-                    if triggerEnable:
-                        alert_trigger(deviceId)
-                        delayTime = 60
-                else:
-                    if 'triggeredId' in DeviceStore[deviceId]:
-                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
-                        del DeviceStore[deviceId]['triggeredId']
-            elif triggerRule == '=':
-                if value == triggerValue:
-                    if triggerEnable:
-                        alert_trigger(deviceId)
-                        delayTime = 60
-                else:
-                    if 'triggeredId' in DeviceStore[deviceId]:
-                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
-                        del DeviceStore[deviceId]['triggeredId']
-            elif triggerRule == '<=':
-                if value <= triggerValue:
-                    if triggerEnable:
-                        alert_trigger(deviceId)
-                        delayTime = 60
-                else:
-                    if 'triggeredId' in DeviceStore[deviceId]:
-                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
-                        del DeviceStore[deviceId]['triggeredId']
-            elif triggerRule == '<':
-                if value < triggerValue:
-                    if triggerEnable:
-                        alert_trigger(deviceId)
-                        delayTime = 60
-                else:
-                    if 'triggeredId' in DeviceStore[deviceId]:
-                        del TriggeredSet[DeviceStore[deviceId]['triggeredId']]
-                        del DeviceStore[deviceId]['triggeredId']
+            if 'triggered' in DeviceStore[deviceId]:
+                triggeredData = DeviceStore[deviceId]['triggered']
+            else:
+                triggeredData = None
+            for index, triggerData in enumerate(DeviceStore[deviceId]['triggers']):
+                triggerRule = triggerData['triggerRule']
+                triggerValue = triggerData['triggerValue']
+                if triggerRule == '>':
+                    if value > triggerValue:
+                        if triggerEnable:
+                            if triggeredData and triggeredData['index'] != index:
+                                del TriggeredSet[triggeredData['id']]
+                                del DeviceStore[deviceId]['triggered']
+                            alert_trigger(deviceId, index)
+                            delayTime = 60
+                            break
+                    else:
+                        if triggeredData and triggeredData['index'] == index:
+                            del TriggeredSet[triggeredData['id']]
+                            del DeviceStore[deviceId]['triggered']
+                elif triggerRule == '>=':
+                    if value >= triggerValue:
+                        if triggerEnable:
+                            alert_trigger(deviceId, index)
+                            delayTime = 60
+                            break
+                    else:
+                        if triggeredData and triggeredData['index'] == index:
+                            del TriggeredSet[triggeredData['id']]
+                            del DeviceStore[deviceId]['triggered']
+                elif triggerRule == '=':
+                    if value == triggerValue:
+                        if triggerEnable:
+                            alert_trigger(deviceId, index)
+                            delayTime = 60
+                            break
+                    else:
+                        if triggeredData and triggeredData['index'] == index:
+                            del TriggeredSet[triggeredData['id']]
+                            del DeviceStore[deviceId]['triggered']
+                elif triggerRule == '<=':
+                    if value <= triggerValue:
+                        if triggerEnable:
+                            alert_trigger(deviceId, index)
+                            delayTime = 60
+                            break
+                    else:
+                        if triggeredData and triggeredData['index'] == index:
+                            del TriggeredSet[triggeredData['id']]
+                            del DeviceStore[deviceId]['triggered']
+                elif triggerRule == '<':
+                    if value < triggerValue:
+                        if triggerEnable:
+                            alert_trigger(deviceId, index)
+                            delayTime = 60
+                            break
+                    else:
+                        if triggeredData and triggeredData['index'] == index:
+                            del TriggeredSet[triggeredData['id']]
+                            del DeviceStore[deviceId]['triggered']
         if check_timeout(deviceId):
             if timeouted == False:
                 timeout_trigger(deviceId)
@@ -213,12 +232,37 @@ def device_delete(deviceId):
 def device_all():
     return jsonify(DeviceStore), 200
 
+@EndPoint.route("/alert_get/<deviceId>", methods=["GET"])
+def alert_get(deviceId):
+    if deviceId not in DeviceStore:
+        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 202
+    if 'triggers' not in DeviceStore[deviceId]:
+        return jsonify({'errorData': 'Not set alert for device [{0}]'.format(deviceId)}) , 202
+    alertData = DeviceStore[deviceId]['triggers']
+    return jsonify({'alertData': alertData}), 200
+
+@EndPoint.route("/alert_add/<deviceId>", methods=["POST"])
+def alert_add(deviceId):
+    try:
+        data = request.json['alertData']
+        checkKey = data['triggerRule']
+        checkKey = data['triggerValue']
+    except KeyError:
+        return jsonify({'errorData': 'Syntax issue'}) , 202
+    if deviceId not in DeviceStore:
+        return jsonify({'errorData': 'Not found device [{0}]'.format(deviceId)}) , 202
+    DeviceStore[deviceId]['triggerEnable'] = True
+    if 'triggers' not in DeviceStore[deviceId]:
+        DeviceStore[deviceId]['triggers'] = []
+    DeviceStore[deviceId]['triggers'].append(data)
+    deviceData = DeviceStore[deviceId]
+    return jsonify({'currentData': deviceData}), 200
+
 @EndPoint.route("/alert_remove/<deviceId>", methods=["GET"])
 def alert_remove(deviceId):
     try:
         del DeviceStore[deviceId]['triggerEnable']
-        del DeviceStore[deviceId]['triggerRule']
-        del DeviceStore[deviceId]['triggerValue']
+        del DeviceStore[deviceId]['triggers']
     except KeyError:
         pass
     return '', 204
@@ -227,23 +271,27 @@ def alert_remove(deviceId):
 def alert_autoset_set(triggeredId):
     if triggeredId not in TriggeredSet:
         return jsonify({'msg': 'Alert not triggered'}), 200
-    deviceId = TriggeredSet[triggeredId]
+    deviceId = TriggeredSet[triggeredId]['id']
+    alertIndex = TriggeredSet[triggeredId]['index']
     valueList = redis_lib.get_device_value(deviceId, start=0, end=5)
     valueSum = 0
     for data in valueList:
         valueSum = valueSum + data['value']
     valueAvg = valueSum / len(valueList)
     autoSetValue = None
-    if DeviceStore[deviceId]['triggerRule'] in ['<', '<=']:
+    if DeviceStore[deviceId]['triggers'][alertIndex]['triggerRule'] in ['<', '<=']:
         autoSetValue = round(valueAvg - 1.0, 2)
-        DeviceStore[deviceId]['triggerValue'] = autoSetValue
-    elif DeviceStore[deviceId]['triggerRule'] in ['>', '>=']:
+        DeviceStore[deviceId]['triggers'][alertIndex]['triggerValue'] = autoSetValue
+    elif DeviceStore[deviceId]['triggers'][alertIndex]['triggerRule'] in ['>', '>=']:
         autoSetValue = round(valueAvg + 1.0, 2)
-        DeviceStore[deviceId]['triggerValue'] = autoSetValue
-    else:
-        del DeviceStore[deviceId]['triggerEnable']
-        del DeviceStore[deviceId]['triggerRule']
-        del DeviceStore[deviceId]['triggerValue']
+        DeviceStore[deviceId]['triggers'][alertIndex]['triggerValue'] = autoSetValue
+    elif DeviceStore[deviceId]['triggers'][alertIndex]['triggerRule'] in ['=']:
+        del DeviceStore[deviceId]['triggers'][alertIndex]
+        del DeviceStore[deviceId]['triggers'][alertIndex]
+        if len(DeviceStore[deviceId]['triggers']) == 0:
+            del DeviceStore[deviceId]['triggers']
+        del TriggeredSet[triggeredId]
+        del DeviceStore[deviceId]['triggered']
     return jsonify({'msg': 'Set alert value to <{0}> (for {1})'.format(autoSetValue, deviceId)}), 200
 
 @EndPoint.route("/alert_autoset/<triggeredId>", methods=["GET"])
@@ -252,7 +300,7 @@ def alert_autoset_page(triggeredId):
     if triggeredId not in TriggeredSet:
         target_msg = 'Not found target'
     else:
-        target_msg = TriggeredSet[triggeredId]
+        target_msg = TriggeredSet[triggeredId]['id']
     return render_template('alert_autoset.html', target_msg=target_msg)
 
 #############################################################

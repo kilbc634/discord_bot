@@ -103,8 +103,12 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             output['text'] = "そのデバイスは存在しません"
             return output
         DeviceStore[deviceId]['triggerEnable'] = True
-        DeviceStore[deviceId]['triggerRule'] = triggerRule
-        DeviceStore[deviceId]['triggerValue'] = triggerValue
+        if 'triggers' not in DeviceStore[deviceId]:
+            DeviceStore[deviceId]['triggers'] = []
+        DeviceStore[deviceId]['triggers'].append({
+            'triggerRule': triggerRule,
+            'triggerValue': triggerValue
+        })
         output['text'] = "裝置 {0}({1}) 警報設定完成".format(deviceId, DeviceStore[deviceId]['deviceName'])
 
     elif functionHeader == '!R_ALERT':
@@ -121,8 +125,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             return output
         try:
             del DeviceStore[deviceId]['triggerEnable']
-            del DeviceStore[deviceId]['triggerRule']
-            del DeviceStore[deviceId]['triggerValue']
+            del DeviceStore[deviceId]['triggers']
         except KeyError:
             output['text'] = "裝置 {0}({1}) 警報尚未設定".format(deviceId, DeviceStore[deviceId]['deviceName'])
             return output
@@ -140,9 +143,12 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         if 'triggerEnable' not in DeviceStore[deviceId]:
             output['text'] = "裝置 {0}({1}) 警報尚未設定".format(deviceId, DeviceStore[deviceId]['deviceName'])
         else:
-            t_rule = DeviceStore[deviceId]['triggerRule']
-            t_value = DeviceStore[deviceId]['triggerValue']
-            output['text'] = '警報觸發規則: (當前數值) {t_rule} {t_value}'.format(**locals())
+            outputText = '警報觸發規則:'
+            for alertData in DeviceStore[deviceId]['triggers']:
+                triggerRule = alertData['triggerRule']
+                triggerValue = alertData['triggerValue']
+                outputText += '\n(當前數值) {triggerRule} {triggerValue}'.format(**locals())
+            output['text'] = outputText
 
     elif functionHeader == '?MEMBER_LIST':
         members = client.get_all_members()
@@ -181,7 +187,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
 
         # run robot to send post on FB page
         myDir = os.getcwd()
-        process = subprocess.Popen('robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
+        process = subprocess.Popen('python -m robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
         channelId = messageObj.channel.id
         def wait_robot_complated(process, reportChannelId=None):
             returncode = process.wait()

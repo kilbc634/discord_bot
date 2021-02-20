@@ -58,9 +58,13 @@ def get_device_store():
     resp = requests.get('http://127.0.0.1:21090/device_store')
     return resp.json()
 
-def update_alert(deviceId, setData):
-    data = {'setData': setData}
-    resp = requests.post('http://127.0.0.1:21090/device/' + deviceId, json=data)
+def alert_get(deviceId):
+    resp = requests.get('http://127.0.0.1:21090/alert_get/' + deviceId)
+    return resp.json()
+
+def alert_add(deviceId, alertData):
+    data = {'alertData': alertData}
+    resp = requests.post('http://127.0.0.1:21090/alert_add/' + deviceId, json=data)
     return resp.json()
 
 def alert_remove(deviceId):
@@ -134,11 +138,10 @@ def handle_message(event):
                         TextSendMessage(text="該裝置不存在")
                     )
                     return
-                setData = dict()
-                setData['triggerEnable'] = True
-                setData['triggerRule'] = triggerRule
-                setData['triggerValue'] = triggerValue
-                update_alert(deviceId, setData)
+                alertData = dict()
+                alertData['triggerRule'] = triggerRule
+                alertData['triggerValue'] = triggerValue
+                alert_add(deviceId, alertData)
                 line_bot_api.reply_message(
                     event.reply_token,
                     TextSendMessage(text="裝置 {0}({1}) 警報設定完成".format(deviceId, DeviceStore[deviceId]['deviceName']))
@@ -168,7 +171,6 @@ def handle_message(event):
                 )
 
             if msg_text.find('?警報') == 0:
-                DeviceStore = get_device_store()
                 try:
                     arg_list = msg_text.split(' ')[1:]
                     deviceId = arg_list[0]
@@ -178,23 +180,35 @@ def handle_message(event):
                         TextSendMessage(text="請使用此格式\n?警報 [Device ID]")
                     )
                     return
-                if deviceId not in DeviceStore:
-                    line_bot_api.reply_message(
-                        event.reply_token,
-                        TextSendMessage(text="該裝置不存在")
-                    )
-                    return
-                if 'triggerEnable' not in DeviceStore[deviceId]:
-                    line_bot_api.reply_message(
-                        event.reply_token,
-                        TextSendMessage(text="裝置 {0}({1}) 警報尚未設定".format(deviceId, DeviceStore[deviceId]['deviceName']))
-                    )
+                alertData = alert_get(deviceId)
+                if 'errorData' in alertData:
+                    if alertData['errorData'].find('Not found') >= 0:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text="該裝置不存在")
+                        )
+                        return
+                    elif alertData['errorData'].find('Not set') >= 0:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text="裝置警報尚未設定\n可以嘗試使用指令 !警報 ...")
+                        )
+                        return
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text="未知錯誤")
+                        )
+                        return
                 else:
-                    t_rule = DeviceStore[deviceId]['triggerRule']
-                    t_value = DeviceStore[deviceId]['triggerValue']
+                    replyText = "警報觸發規則:"
+                    for alert in alertData['alertData']:
+                        triggerRule = alert['triggerRule']
+                        triggerValue = alert['triggerValue']
+                        replyText += "\n(當前數值) {triggerRule} {triggerValue}".format(**locals())
                     line_bot_api.reply_message(
                         event.reply_token,
-                        TextSendMessage(text='警報觸發規則: (當前數值) {t_rule} {t_value}'.format(**locals()))
+                        TextSendMessage(text=replyText)
                     )
 
 
