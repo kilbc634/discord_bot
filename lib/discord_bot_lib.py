@@ -239,16 +239,35 @@ def create_device_data_image(deviceId, folderPath='/res/image/'):
             break
         x.insert(0, dt)
         y.insert(0, value)
+    # write data points
     plt.plot(x, y)
-    if 'triggerValue' in DeviceStore[deviceId]:
-        plt.axhline(y=DeviceStore[deviceId]['triggerValue'], color='r', linestyle='-')
-        y.append(DeviceStore[deviceId]['triggerValue'])
-    plt.ylim(min(y) - 1.0, max(y) + 1.0)
+    # write alert line if exists
+    if 'triggers' in DeviceStore[deviceId]:
+        for alertData in DeviceStore[deviceId]['triggers']:
+            y.append(alertData['triggerValue'])
+            plt.axhline(y=alertData['triggerValue'], color='r', linestyle='-')
+    # set graphic view area limit
+    yMid = ( max(y) + min(y) ) / 2
+    yHalfLength = ( max(y) - min(y) ) / 2
+    yMax = yMid + yHalfLength * 1.1
+    yMin = yMid - yHalfLength * 1.1
+    plt.ylim(yMin, yMax)
+    # fill color between alert line and limit if need
+    if 'triggers' in DeviceStore[deviceId]:
+        for alertData in DeviceStore[deviceId]['triggers']:
+            if alertData['triggerRule'] in ['>', '>=']:
+                plt.axhspan(ymin=alertData['triggerValue'], ymax=yMax, color='r', alpha=0.2)
+            elif alertData['triggerRule'] in ['<', '<=']:
+                plt.axhspan(ymin=yMin, ymax=alertData['triggerValue'], color='r', alpha=0.2)
+    # auto format data time for x axis
     plt.gcf().autofmt_xdate()
+    # set label and title text
     plt.xlabel('Time')
     plt.ylabel(DeviceStore[deviceId]['unit'])
     plt.title(deviceId)
+    # invert the y axis, 
     plt.gca().invert_yaxis()
+    # save(output) graphic
     plt.savefig(savePath)
     plt.clf()
     plt.cla()
