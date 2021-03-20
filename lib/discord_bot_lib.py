@@ -24,7 +24,8 @@ FunctionInfo = {
     "?ALERT": "Format:\n?ALERT [device ID]",
     "?MEMBER_LIST": "Format:\n?MEMBER_LIST",
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
-    "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)"
+    "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)",
+    "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)"
 }
 
 def check_function(content):
@@ -187,7 +188,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
 
         # run robot to send post on FB page
         myDir = os.getcwd()
-        process = subprocess.Popen('python -m robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
+        process = subprocess.Popen('python3 -m robot -d {myDir}/report -v callNode:"{nodeName}" {myDir}/lib/upload_to_FB.robot'.format(**locals()), shell=True)
         channelId = messageObj.channel.id
         def wait_robot_complated(process, reportChannelId=None):
             returncode = process.wait()
@@ -201,6 +202,12 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         waitingThread = threading.Thread(target=wait_robot_complated, args=(process, channelId), daemon=True)
         waitingThread.start()
         output['text'] = '処理中、少々お待ちください...'
+
+    elif functionHeader == '!TELEGRAM':
+        actionType = functionArgs[0]
+        contentValue = functionArgs[1]
+        # TO DO
+        # if actionType not in ['setup', 'S', 'verify', 'V', 'end', 'E']
 
     else:
         text = help_message()
