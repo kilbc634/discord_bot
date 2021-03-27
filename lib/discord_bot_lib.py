@@ -204,10 +204,32 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         output['text'] = '処理中、少々お待ちください...'
 
     elif functionHeader == '!TELEGRAM':
-        actionType = functionArgs[0]
-        contentValue = functionArgs[1]
-        # TO DO
-        # if actionType not in ['setup', 'S', 'verify', 'V', 'end', 'E']
+        try:
+            actionType = functionArgs[0]
+            contentValue = functionArgs[1]
+        except:
+            output['text'] = '語法錯誤!\n' + FunctionInfo['!TELEGRAM']
+            return output
+        if actionType not in ['setup', 'S', 'verify', 'V', 'end', 'E']:
+            output['text'] = '異常的 actionType，請執行 [setup(S)|verify(V)|end(E)]'
+            return output
+
+        output['text'] = '執行中....'
+
+        authorId = messageObj.author.id
+        if actionType in ['setup', 'S']:
+            pass
+            # check authorId 是否存在於 endpoint_server/telegram/<authorId>，是則拒絕
+            # 否則 create for <authorId>
+            # run robot script to submit phone number step
+        if actionType in ['verify', 'V']:
+            pass
+            # send verify code to endpoint_server/telegram/<authorId>
+            # robot script will get this data
+        if actionType in ['end', 'E']:
+            pass
+            # send end status to endpoint_server/telegram/<authorId>
+            # robot script will self end when getend status
 
     else:
         text = help_message()

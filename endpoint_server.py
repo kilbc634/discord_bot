@@ -40,6 +40,7 @@ def message_user():
 DeviceStore = dict()
 AlertThreads = list()
 TriggeredSet = dict()
+TelegramData = dict()
 
 def get_timestamp(utc=8):
     dt_now = datetime.now(tz=timezone(timedelta(hours=utc)))
@@ -302,6 +303,68 @@ def alert_autoset_page(triggeredId):
     else:
         target_msg = TriggeredSet[triggeredId]['id']
     return render_template('alert_autoset.html', target_msg=target_msg)
+
+######## Telegram API #####################################################
+
+@EndPoint.route("/telegram/<authorId>", methods=["GET"])
+def get_telegram_data(authorId):
+    if authorId in TelegramData:
+        data = {'data': TelegramData[authorId]}
+        return jsonify(data), 200
+    else:
+        data = {}
+        return jsonify(data), 200
+
+@EndPoint.route("/telegram/<authorId>", methods=["POST"])
+def create_telegram_data(authorId):
+    if authorId in TelegramData:
+        return jsonify({"error": {"message": "This author already exists"}}), 200
+    try:
+        phoneNumber = request.json['phoneNumber']
+        numCheck = int(phoneNumber)
+    except:
+        return jsonify({"error": {"message": "Expect 'phoneNumber' key in payload"}}), 200
+    
+    TelegramData[authorId] = {}
+    TelegramData[authorId]['phoneNumber'] = phoneNumber
+    TelegramData[authorId]['status'] = 'setup'
+    data = {'data': TelegramData[authorId]}
+    return jsonify(data), 200
+
+@EndPoint.route("/telegram/<authorId>/verify", methods=["GET"])
+def get_telegram_verify_code(authorId):
+    if TelegramData[authorId]['status'] == 'setup':
+        please_verify_text = 'Please send Verify Code for {phone}\n!TELEGRAM verify(V) [Verify Code]'.format(phone=TelegramData[authorId]['phoneNumber'])
+        DiscordClient.loop.create_task(
+            DiscordClient.send_message_with_userId(int(authorId), please_verify_text)
+        )
+        TelegramData[authorId]['status'] = 'verify'
+        TelegramData[authorId]['verifyCode'] = ''
+        return jsonify({'verifyCode': TelegramData[authorId]['verifyCode']}), 200
+    # robot script will every call this to hope continue when has verify code
+    else:
+        return jsonify({'verifyCode': TelegramData[authorId]['verifyCode']}), 200
+
+@EndPoint.route("/telegram/<authorId>/verify", methods=["POST"])
+def post_telegram_verify_code(authorId):
+    try:
+        verifyCode = request.json['verifyCode']
+    except:
+        return jsonify({"error": {"message": "Expect 'verifyCode' key in payload"}}), 200
+    
+    TelegramData[authorId]['verifyCode'] = verifyCode
+    return jsonify({'verifyCode': TelegramData[authorId]['verifyCode']}), 200
+
+@EndPoint.route("/telegram/<authorId>/calling", methods=["POST"])
+def post_telegram_calling(authorId):
+    try:
+        callCount = request.json['callCount']
+    except:
+        return jsonify({"error": {"message": "Expect 'callCount' key in payload"}}), 200
+
+    TelegramData[authorId]['callCount'] = int(callCount)
+    TelegramData[authorId]['status'] = 'listen'
+    return jsonify({'callCount': TelegramData[authorId]['callCount']}), 200
 
 #############################################################
 #
