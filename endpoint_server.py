@@ -315,6 +315,14 @@ def get_telegram_data(authorId):
         data = {}
         return jsonify(data), 200
 
+@EndPoint.route("/telegram/<authorId>", methods=["DELETE"])
+def delete_telegram_data(authorId):
+    if authorId in TelegramData:
+        del TelegramData[authorId]
+        return '', 204
+    else:
+        return jsonify({"error": {"message": "Not exists"}}), 202
+
 @EndPoint.route("/telegram/<authorId>", methods=["POST"])
 def create_telegram_data(authorId):
     if authorId in TelegramData:
@@ -334,7 +342,7 @@ def create_telegram_data(authorId):
 @EndPoint.route("/telegram/<authorId>/verify", methods=["GET"])
 def get_telegram_verify_code(authorId):
     if TelegramData[authorId]['status'] == 'setup':
-        please_verify_text = 'Please send Verify Code for {phone}\n!TELEGRAM verify(V) [Verify Code]'.format(phone=TelegramData[authorId]['phoneNumber'])
+        please_verify_text = 'Please send the Verify Code for **{phone}**\nUse:\n!TELEGRAM verify(V) [Verify Code]'.format(phone=TelegramData[authorId]['phoneNumber'])
         DiscordClient.loop.create_task(
             DiscordClient.send_message_with_userId(int(authorId), please_verify_text)
         )
@@ -355,16 +363,18 @@ def post_telegram_verify_code(authorId):
     TelegramData[authorId]['verifyCode'] = verifyCode
     return jsonify({'verifyCode': TelegramData[authorId]['verifyCode']}), 200
 
-@EndPoint.route("/telegram/<authorId>/calling", methods=["POST"])
-def post_telegram_calling(authorId):
+@EndPoint.route("/telegram/<authorId>/contact", methods=["POST"])
+def post_telegram_contact(authorId):
+    if TelegramData[authorId]['status'] == 'end':
+        return jsonify({'status': 'end'}), 200
     try:
-        callCount = request.json['callCount']
+        contactCount = request.json['contactCount']
     except:
-        return jsonify({"error": {"message": "Expect 'callCount' key in payload"}}), 200
+        return jsonify({"error": {"message": "Expect 'contactCount' key in payload"}}), 200
 
-    TelegramData[authorId]['callCount'] = int(callCount)
+    TelegramData[authorId]['contactCount'] = int(contactCount)
     TelegramData[authorId]['status'] = 'listen'
-    return jsonify({'callCount': TelegramData[authorId]['callCount']}), 200
+    return jsonify({'contactCount': TelegramData[authorId]['contactCount']}), 200
 
 #############################################################
 #
