@@ -372,9 +372,33 @@ def post_telegram_contact(authorId):
     except:
         return jsonify({"error": {"message": "Expect 'contactCount' key in payload"}}), 200
 
+    # init contactCount value on first calling
+    if 'contactCount' not in TelegramData[authorId]:
+        TelegramData[authorId]['contactCount'] = 0
+
+    # send alert when contactCount change
+    if TelegramData[authorId]['contactCount'] != int(contactCount):
+        alert_text = '[TELEGRAM] 你有未讀訊息 {contactCount} 則'.format(contactCount=contactCount)
+        DiscordClient.loop.create_task(
+            DiscordClient.send_message_with_userId(int(authorId), alert_text)
+        )
+    # update contactCount value
     TelegramData[authorId]['contactCount'] = int(contactCount)
+    if TelegramData[authorId]['status'] == 'verify':
+        start_listen_text = '已經開始監聽...'
+        DiscordClient.loop.create_task(
+            DiscordClient.send_message_with_userId(int(authorId), start_listen_text)
+        )
     TelegramData[authorId]['status'] = 'listen'
     return jsonify({'contactCount': TelegramData[authorId]['contactCount']}), 200
+
+@EndPoint.route("/telegram/<authorId>/end", methods=["POST"])
+def post_telegram_end(authorId):
+    if authorId in TelegramData:
+        TelegramData[authorId]['status'] = 'end'
+        return jsonify({'status': TelegramData[authorId]['status']}), 200
+    else:
+        return jsonify({"error": {"message": "Not found"}}), 200
 
 #############################################################
 #

@@ -39,9 +39,9 @@ Start Listen Telegram Contact Status
     [Documentation]    Start listen telegram contact status, will call API to update status in every loop
     [Arguments]    ${authorId}    ${loopTime}=60s
     FOR    ${times}    IN RANGE    3600
-        Sleep    ${loopTime}
         ${total} =    Get Total Active Count On Contact Sidebar
         Update Contact Status Via Telegram API    ${authorId}    ${total}
+        Sleep    ${loopTime}
     END
 
 Get Total Active Count On Contact Sidebar

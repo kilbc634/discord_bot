@@ -25,7 +25,8 @@ FunctionInfo = {
     "?MEMBER_LIST": "Format:\n?MEMBER_LIST",
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
     "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)",
-    "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)"
+    "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)",
+    "?TELEGRAM": "Format:\n?TELEGRAM"
 }
 
 def check_function(content):
@@ -206,7 +207,8 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
     elif functionHeader == '!TELEGRAM':
         try:
             actionType = functionArgs[0]
-            contentValue = functionArgs[1]
+            if actionType not in ['end', 'E']:
+                contentValue = functionArgs[1]
         except:
             output['text'] = '語法錯誤!\n' + FunctionInfo['!TELEGRAM']
             return output
@@ -214,22 +216,46 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             output['text'] = '異常的 actionType，請執行 [setup(S)|verify(V)|end(E)]'
             return output
 
-        output['text'] = '執行中....'
-
         authorId = messageObj.author.id
         if actionType in ['setup', 'S']:
-            pass
-            # check authorId 是否存在於 endpoint_server/telegram/<authorId>，是則拒絕
-            # 否則 create for <authorId>
-            # run robot script to submit phone number step
+            resp = requests.get('http://127.0.0.1:21090/telegram/{id}'.format(id=authorId))
+            if 'data' in resp.json():
+                output['text'] = '你已經綁定了 **{phone}**'.format(phone=resp.json()['data']['phoneNumber'])
+            else:
+                data = {'phoneNumber': contentValue}
+                resp = requests.post('http://127.0.0.1:21090/telegram/{id}'.format(id=authorId), json=data)
+                if 'error' in resp.json():
+                    output['text'] = '異常的 phoneNumber，電話號碼不含國家碼 ex: 0912345678'
+                else:
+                    # run robot to listen telegram
+                    myDir = os.getcwd()
+                    process = subprocess.Popen('python3 -m robot -d {myDir}/report -v authorId:"{authorId}" {myDir}/lib/listen_telegram.robot'.format(**locals()), shell=True)
+                    output['text'] = '登入中...'
         if actionType in ['verify', 'V']:
-            pass
-            # send verify code to endpoint_server/telegram/<authorId>
-            # robot script will get this data
+            data = {'verifyCode': contentValue}
+            resp = requests.post('http://127.0.0.1:21090/telegram/{id}/verify'.format(id=authorId), json=data)
+            if 'error' in resp.json():
+                    output['text'] = '異常的 verifyCode，通常為5碼數字'
+            else:
+                output['text'] = '驗證中...'
         if actionType in ['end', 'E']:
-            pass
-            # send end status to endpoint_server/telegram/<authorId>
-            # robot script will self end when getend status
+            resp = requests.post('http://127.0.0.1:21090/telegram/{id}/end'.format(id=authorId))
+            if 'error' in resp.json():
+                output['text'] = '你沒有綁定中的 Telegram'
+            else:
+                output['text'] = '結束中...'
+
+    elif functionHeader == '?TELEGRAM':
+        authorId = messageObj.author.id
+        resp = requests.get('http://127.0.0.1:21090/telegram/{id}'.format(id=authorId))
+        if 'data' not in resp.json():
+            output['text'] = '你尚未綁定 Telegram\n' + FunctionInfo['!TELEGRAM']
+        else:
+            if 'contactCount' not in resp.json()['data']:
+                output['text'] = '你尚未開始監聽'
+            else:
+                contactCount = resp.json()['data']['contactCount']
+                output['text'] = '當前未讀訊息: ' + str(contactCount)
 
     else:
         text = help_message()

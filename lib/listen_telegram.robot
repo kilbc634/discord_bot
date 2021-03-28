@@ -24,8 +24,8 @@ SuiteSetup
     ${workDir} =    Evaluate    os.getcwd()    os
     Set Suite Variable    ${WORKDIR}    ${workDir}
     ${options}=    Evaluate  sys.modules['selenium.webdriver.chrome.options'].Options()    sys
-    # Call Method     ${options}    add_argument    --no-sandbox
-    # Call Method     ${options}    add_argument    --headless
+    Call Method     ${options}    add_argument    --no-sandbox
+    Call Method     ${options}    add_argument    --headless
     Call Method     ${options}    add_argument    --disable-dev-shm-usage
     Call Method     ${options}    add_argument    --disable-notifications
     ${myOS} =    Evaluate    platform.system()    platform
