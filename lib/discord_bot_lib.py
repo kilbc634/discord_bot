@@ -9,9 +9,11 @@ from lxml import etree
 from setting import *
 from endpoint_server import DeviceStore
 from lib import redis_lib
+from lib import poeNinjaModel
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import traceback
 
 FunctionInfo = {
     "?HELP": "Format:\n?HELP [(Optional: command)]",
@@ -26,7 +28,8 @@ FunctionInfo = {
     "?CHANNEL_LIST": "Format:\n?CHANNEL_LIST",
     "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)",
     "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)",
-    "?TELEGRAM": "Format:\n?TELEGRAM"
+    "?TELEGRAM": "Format:\n?TELEGRAM",
+    "!POE": "Format:\n!POE [api url]\nex: `https://poe.ninja/api/data/99c6ffc55e1585ef0c153787e51a4195/GetCharacter?account=nagmint&name=nag_llfl&overview=ultimatum`"
 }
 
 def check_function(content):
@@ -256,6 +259,30 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             else:
                 contactCount = resp.json()['data']['contactCount']
                 output['text'] = '當前未讀訊息: ' + str(contactCount)
+
+    elif functionHeader == '!POE':
+        try:
+            apiUrl = functionArgs[0]
+            if apiUrl.find('https://poe.ninja/api/data/') != 0:
+                raise ValueError
+        except:
+            output['text'] = FunctionInfo['!TELEGRAM']
+
+        try:
+            datas = poeNinjaModel.pickUp_ClusterJewel(apiUrl)
+        except:
+            traceback.print_exc()
+            output['text'] = '未知錯誤'
+
+        formatText = str()
+        for data in datas:
+            formatTextPart = '{type}\n---------------------------\n({enchant})\n{mods}\n\n'.format(
+                type = data['jewelType'],
+                enchant = data['enchantMod'],
+                mods = '\n'.join(data['passiveSkillMods'])
+            )
+            formatText = formatText + formatTextPart
+        output['text'] = formatText
 
     else:
         text = help_message()
