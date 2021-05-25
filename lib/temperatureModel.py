@@ -63,9 +63,6 @@ class requestLib():
     def loadConfig(self, filePath):
         config = ConfigParser()
         config.read(filePath, encoding='utf-8-sig')
-        config['departmentId'] = envId
-        config['departmentName'] = envName
-        config['className'] = className
         return config
 
     #-------------------------------------------------------------------------------------
