@@ -297,6 +297,9 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
 
         tempLib = temperatureModel.requestLib()
         template = tempLib.loadConfig('template.ini')
+        envId = '11' # user['env']['departmentId']
+        envName = '電機碩' # user['env']['departmentName']
+        className = '電機碩一甲' # user['env']['className']
         try:
             userToken = tempLib.getToken(account, password)
         except:
@@ -313,9 +316,9 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             nightDo = template[tempLib.WEEKS_STR[weekNum]]['night']
 
             resp = tempLib.post_tempData(userToken, account,
-            template['departmentId'],
-            template['departmentName'],
-            template['className'],
+            envId,
+            envName,
+            className,
             str(agoDay),
             morningActivity=morningDo,
             noonActivity=noonDo,
