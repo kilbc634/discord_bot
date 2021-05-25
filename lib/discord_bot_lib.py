@@ -10,6 +10,7 @@ from setting import *
 from endpoint_server import DeviceStore
 from lib import redis_lib
 from lib import poeNinjaModel
+from lib import temperatureModel
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
@@ -29,7 +30,8 @@ FunctionInfo = {
     "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)",
     "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)",
     "?TELEGRAM": "Format:\n?TELEGRAM",
-    "!POE": "Format:\n!POE [api url]\nex: `https://poe.ninja/api/data/99c6ffc55e1585ef0c153787e51a4195/GetCharacter?account=nagmint&name=nag_llfl&overview=ultimatum`"
+    "!POE": "Format:\n!POE [api url]\nex: `https://poe.ninja/api/data/99c6ffc55e1585ef0c153787e51a4195/GetCharacter?account=nagmint&name=nag_llfl&overview=ultimatum`",
+    "!temperature": "Format:\n!temperature [account] [password]"
 }
 
 def check_function(content):
@@ -266,13 +268,14 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             if apiUrl.find('https://poe.ninja/api/data/') != 0:
                 raise ValueError
         except:
-            output['text'] = FunctionInfo['!TELEGRAM']
-
+            output['text'] = FunctionInfo['!POE']
+            return output
         try:
             datas = poeNinjaModel.pickUp_ClusterJewel(apiUrl)
         except:
             traceback.print_exc()
             output['text'] = '未知錯誤'
+            return output
 
         formatText = str()
         for data in datas:
@@ -283,6 +286,42 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             )
             formatText = formatText + formatTextPart
         output['text'] = formatText
+
+    elif functionHeader == '!temperature':
+        try:
+            account = functionArgs[0]
+            password = functionArgs[1]
+        except:
+            output['text'] = FunctionInfo['!temperature']
+            return output
+
+        tempLib = temperatureModel.requestLib()
+        template = tempLib.loadConfig('template.ini')
+        try:
+            userToken = tempLib.getToken(account, password)
+        except:
+            output['text'] = "登入失敗，帳號或密碼錯誤"
+            return output
+
+        report = "填報結果:\n"
+        today = datetime.today().date()
+        for agoDay in range(8):  # today + 7 day ago
+            targetDate = today - timedelta(days=agoDay)
+            weekNum = targetDate.weekday()
+            morningDo = template[tempLib.WEEKS_STR[weekNum]]['morning']
+            noonDo = template[tempLib.WEEKS_STR[weekNum]]['noon']
+            nightDo = template[tempLib.WEEKS_STR[weekNum]]['night']
+
+            resp = tempLib.post_tempData(userToken, account,
+            template['departmentId'],
+            template['departmentName'],
+            template['className'],
+            str(agoDay),
+            morningActivity=morningDo,
+            noonActivity=noonDo,
+            nightActivity=nightDo)
+            report = report + resp['messages'][0] + "\n"
+        output['text'] = report
 
     else:
         text = help_message()

@@ -76,14 +76,18 @@ class MyClient(discord.Client):
                 sender = message.author.name
                 text = message.content
                 await channel.send('from {sender}:\n{text}'.format(**locals()))
-            else:
-                if discord_bot_lib.check_function(message.content):
-                    response = discord_bot_lib.command_line(self,
-                        message.content,
-                        message.attachments,
-                        admin=True,
-                        messageObj=message
-                    )
+
+            if discord_bot_lib.check_function(message.content):
+                if message.author.id == self.UserId_Owner:
+                    admin = True
+                else:
+                    admin = False
+                response = discord_bot_lib.command_line(self,
+                    message.content,
+                    message.attachments,
+                    admin=admin,
+                    messageObj=message
+                )
         elif str(message.channel.type) == 'text':
             if message.channel.name not in AffectChannels:
                 return
