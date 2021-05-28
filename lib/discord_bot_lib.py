@@ -296,13 +296,14 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             return output
 
         tempLib = temperatureModel.requestLib()
-        template = tempLib.loadConfig('template.ini')
+        template = tempLib.loadConfig('lib/template.ini')
         envId = '11' # user['env']['departmentId']
         envName = '電機碩' # user['env']['departmentName']
         className = '電機碩一甲' # user['env']['className']
         try:
             userToken = tempLib.getToken(account, password)
         except:
+            traceback.print_exc()
             output['text'] = "登入失敗，帳號或密碼錯誤"
             return output
 
@@ -319,7 +320,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             envId,
             envName,
             className,
-            str(agoDay),
+            str(today),
             morningActivity=morningDo,
             noonActivity=noonDo,
             nightActivity=nightDo)

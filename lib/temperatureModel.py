@@ -18,7 +18,7 @@ class requestLib():
 
     def __request(self, method, node='', **kwargs):
         resp = self.SESSION.request(method, self.URL + node, **kwargs)
-        if DEBUG:
+        if self.DEBUG:
             try:
                 print(resp)
                 print(resp.text)
@@ -52,18 +52,18 @@ class requestLib():
     def checkPosted(self, token, userId, date):
         resp = self.get_tempData(token, userId, date)
         if len(resp.text) == 0:
-            if DEBUG:
+            if self.DEBUG:
                 print('[Info] {userId}-{date} date not exist'.format(userId=userId, date=date))
             return False
         else:
-            if DEBUG:
+            if self.DEBUG:
                 print('[Info] {userId}-{date} date exist'.format(userId=userId, date=date))
             return True
 
     def loadConfig(self, filePath):
         config = ConfigParser()
         config.read(filePath, encoding='utf-8-sig')
-        return config
+        return config._sections
 
     #-------------------------------------------------------------------------------------
 
