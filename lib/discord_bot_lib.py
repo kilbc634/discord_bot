@@ -320,7 +320,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             envId,
             envName,
             className,
-            str(today),
+            str(targetDate),
             morningActivity=morningDo,
             noonActivity=noonDo,
             nightActivity=nightDo)
