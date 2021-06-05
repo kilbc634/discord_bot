@@ -7,9 +7,10 @@ import asyncio
 import linebotapp
 from setting import *
 import endpoint_server
+import random
 
 client = None
-AffectChannels = ['bot共闘', '車']
+AffectChannels = ['general']
 
 '''
 TextChannel sample:
@@ -37,6 +38,7 @@ class MyClient(discord.Client):
         self.clannelId_onCar = 557487268580032512
         self.clannelId_onTest = 643265881996132362
         self.UserId_Owner = 407554740906360833
+        self.UserId_Vip = 283866208657211393
 
     async def on_ready(self):
         try:
@@ -91,22 +93,9 @@ class MyClient(discord.Client):
         elif str(message.channel.type) == 'text':
             if message.channel.name not in AffectChannels:
                 return
-            if message.author.id == self.UserId_Owner:
-                if discord_bot_lib.check_function(message.content):
-                    response = discord_bot_lib.command_line(self,
-                        message.content,
-                        message.attachments,
-                        admin=True,
-                        messageObj=message
-                    )
-            else:
-                if discord_bot_lib.check_function(message.content):
-                    response = discord_bot_lib.command_line(self,
-                        message.content,
-                        message.attachments,
-                        admin=False,
-                        messageObj=message
-                    )
+            if message.author.id == self.UserId_Vip:
+                random_list = ['還敢抓我錯漏字呀 <_<', '講點別的 >_>', 'FF14ㄏ送', '我需要顯卡', 'YEE~', '<@!283866208657211393>']
+                response = {'text': random.choice(random_list)}
         
         if response:
             sendText = None
