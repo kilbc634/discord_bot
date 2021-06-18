@@ -15,7 +15,7 @@ Listen Telegram By Discord Author Id
     [Timeout]    NONE
     Login Telegram By Phone Number    ${phoneNumber}
     Wait Until Verify Code Is Got And Input    ${authorId}
-    Wait Until Page Contains Element    //span[contains(@class, "im_dialog_badge badge")]
+    Wait Until Page Contains Element    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="subtitle"]/p
     Start Listen Telegram Contact Status    ${authorId}
     [Teardown]    Delete Bind Data Via Telegram API    ${authorId}
 

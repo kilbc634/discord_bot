@@ -4,29 +4,25 @@ Login Telegram By Phone Number
     [Arguments]    ${phone}
     Input Phone Data    ${phone}
     Sleep    1s
-    Submit And Confirm Phone Data    
+    Submit To Next
 
 Input Phone Data
     [Documentation]    Input phone data, default for Taiwan(+886) phone
     [Arguments]    ${phone}    ${phoneCountry}=+886
-    Wait Until Element Is Visible    //input[@name="phone_country"]
-    Wait Until Element Is Visible    //input[@name="phone_number"]
-    Input Text    //input[@name="phone_country"]    ${phoneCountry}    clear=${true}
-    Input Text    //input[@name="phone_number"]    ${phone}
+    Wait Until Element Is Visible    //input[@id="sign-in-phone-number"]
+    Input Text    //input[@id="sign-in-phone-number"]    ${phoneCountry}${phone}    clear=${true}
 
-Submit And Confirm Phone Data
-    [Documentation]    Submit and confirm phone data
-    Wait Until Element Is Visible    //a[@class="login_head_submit_btn"]
-    Click Element    //a[@class="login_head_submit_btn"]
-    Wait Until Element Is Visible    //div[@class="confirm_modal_wrap md_simple_modal_wrap"]/div[@class="md_simple_modal_footer"]/button/span[@my-i18n="modal_ok"]
-    Click Element    //div[@class="confirm_modal_wrap md_simple_modal_wrap"]/div[@class="md_simple_modal_footer"]/button/span[@my-i18n="modal_ok"]
+Submit To Next
+    [Documentation]    Submit to next
+    Wait Until Element Is Visible    //button[@type="submit"]/div
+    Click Element    //button[@type="submit"]/div
 
 Wait Until Verify Code Is Got And Input
     [Documentation]    Wait until verify code is got, and return this verify code
     [Arguments]    ${authorId}    ${timeout}=600s
-    Wait Until Element Is Visible    //input[@name="phone_code"]
+    Wait Until Element Is Visible    //input[@id="sign-in-code"]
     ${verifyCode} =    Wait Until Keyword Succeeds    ${timeout}    5s    Try To Get Verify Code With Data    ${authorId}
-    Input Text    //input[@name="phone_code"]    ${verifyCode}
+    Input Text    //input[@id="sign-in-code"]    ${verifyCode}
 
 Try To Get Verify Code With Data
     [Documentation]    Try to get verify code with data, keyword will fail when no data
@@ -38,7 +34,7 @@ Try To Get Verify Code With Data
 Start Listen Telegram Contact Status
     [Documentation]    Start listen telegram contact status, will call API to update status in every loop
     [Arguments]    ${authorId}    ${loopTime}=60s
-    FOR    ${times}    IN RANGE    3600
+    FOR    ${times}    IN RANGE    5400
         ${total} =    Get Total Active Count On Contact Sidebar
         Update Contact Status Via Telegram API    ${authorId}    ${total}
         Sleep    ${loopTime}
@@ -47,7 +43,7 @@ Start Listen Telegram Contact Status
 Get Total Active Count On Contact Sidebar
     [Documentation]    Get total active count on contact sidebar
     ${total} =    Set Variable    ${0}
-    @{elements} =    Get WebElements    //span[contains(@class, "im_dialog_badge badge")]
+    @{elements} =    Get WebElements    //div[@class="Badge unread"]
     FOR    ${element}    IN    @{elements}
         ${count} =    Get Element Attribute    ${element}    textContent
         ${total} =    Evaluate    ${total} + ${count}
