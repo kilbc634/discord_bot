@@ -1,4 +1,11 @@
 *** Keywords ***
+Click Button For Login By Phone Number
+    [Documentation]    Click button for login by phone number
+    Wait Until Page Contains Element    //div[@class="auth-form qr"]/*[@class="qr-loading"]/*[@class="Loading"]
+    Wait Until Page Does Not Contain Element    //div[@class="auth-form qr"]/*[@class="qr-loading"]/*[@class="Loading"]
+    Wait Until Element Is Visible    //div[@class="auth-form qr"]/button
+    Click Element    //div[@class="auth-form qr"]/button
+
 Login Telegram By Phone Number
     [Documentation]    Login Telegram by phone number, default for Taiwan(+886) phone
     [Arguments]    ${phone}
