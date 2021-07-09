@@ -41,7 +41,7 @@ Try To Get Verify Code With Data
 Start Listen Telegram Contact Status
     [Documentation]    Start listen telegram contact status, will call API to update status in every loop
     [Arguments]    ${authorId}    ${loopTime}=60s
-    FOR    ${times}    IN RANGE    5400
+    FOR    ${times}    IN RANGE    6000
         ${total} =    Get Total Active Count On Contact Sidebar
         Update Contact Status Via Telegram API    ${authorId}    ${total}
         Sleep    ${loopTime}
@@ -50,7 +50,7 @@ Start Listen Telegram Contact Status
 Get Total Active Count On Contact Sidebar
     [Documentation]    Get total active count on contact sidebar
     ${total} =    Set Variable    ${0}
-    @{elements} =    Get WebElements    //div[@class="Badge unread"]
+    @{elements} =    Get WebElements    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="title"]/h3[text()!="A.G.M.P. Information"]/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]
     FOR    ${element}    IN    @{elements}
         ${count} =    Get Element Attribute    ${element}    textContent
         ${total} =    Evaluate    ${total} + ${count}
