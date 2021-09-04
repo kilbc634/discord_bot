@@ -2,9 +2,11 @@ requests==2.22.0
 robotframework==3.1.2
 robotframework-seleniumlibrary==4.1.0
 discord-py==1.4.1
+discord.py[voice]
 flask==1.1.2
 robotframework-requests==0.6.3
 line-bot-sdk==1.17.0
 lxml==4.3.1
 redis==2.10.6
 matplotlib==3.0.3
+youtube-dl==2021.6.6
