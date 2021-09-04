@@ -68,6 +68,8 @@ class MyClient(discord.Client):
         # heart beat test
         if message.content == 'ping':
             await message.channel.send('pong')
+        elif message.content == '外賣':
+            await message.channel.send('https://cdn.discordapp.com/attachments/643265881996132362/883640278743908412/ka-li-ban-fan-ftbao-ge-neal_online-video-cutter.com.gif')
         
         response = dict()
         if str(message.channel.type) == 'private':  # as Direct Message(DM)
