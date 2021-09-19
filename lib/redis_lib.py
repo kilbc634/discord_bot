@@ -1,6 +1,7 @@
 import redis
 from ast import literal_eval
 import copy
+import json
 from setting import *
 
 RedisClient = redis.Redis(host=REDIS_HOST, port=6379, password=REDIS_AUTH, decode_responses=True)
@@ -43,3 +44,19 @@ def transform_to_average_data(dataList, sampleRange):
         averageData.append(item)
         del data[0:sampleRange]  
     return averageData
+
+def save_all_device_data(deviceStore):
+    RedisClient.set('deviceStore', deviceStore)
+
+def load_all_device_data():
+    deviceData = dict()
+    dataString = RedisClient.get('deviceStore')
+    print('[INFO] get deviceStore from redis: ' + dataString)
+    if dataString:
+        deviceData = literal_eval(dataString)
+        for deviceId in deviceData:
+            if 'triggered' in deviceData[deviceId]:
+                del deviceData[deviceId]['triggered']
+            if 'triggerEnable' in deviceData[deviceId]:
+                deviceData[deviceId]['triggerEnable'] = True
+    return deviceData

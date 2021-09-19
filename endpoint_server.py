@@ -37,7 +37,13 @@ def message_user():
 #
 #############################################################
 
-DeviceStore = dict()
+try:
+    DeviceStore = redis_lib.load_all_device_data()
+except:
+    DeviceStore = dict()
+    print('[WARN] Load DeviceStore failed !!')
+    traceback.print_exc()
+print('[INFO] Init DeviceStore is done\n' + str(DeviceStore))
 AlertThreads = list()
 TriggeredSet = dict()
 TelegramData = dict()
@@ -112,6 +118,7 @@ def timeout_trigger(deviceId, timeout_status=True):
         traceback.print_exc()
 
 def alert_thread(deviceId):
+    print('[INFO] bind alertThread for -> ' + deviceId)
     timeouted = False
     while True:
         delayTime = 3
@@ -194,6 +201,12 @@ def alert_thread(deviceId):
                 DeviceStore[deviceId]['triggerEnable'] = True
             delayTime = 3
         time.sleep(delayTime)
+
+def sync_thread(loopTime=60):
+    while True:
+        print('[INFO] saving DeviceStore data to redis...\n' + str(DeviceStore))
+        redis_lib.save_all_device_data(DeviceStore)
+        time.sleep(loopTime)
 
 @EndPoint.route("/device/<deviceId>", methods=["POST"])
 def device_post(deviceId):
@@ -456,8 +469,17 @@ def view_report(path):
 
 def run(baseClient=None):
     global DiscordClient
+    global DeviceStore
     if baseClient:
         DiscordClient = baseClient
+
+    for deviceId in DeviceStore:
+        alertThread = threading.Thread(target=alert_thread, args=(deviceId,), daemon=True)
+        AlertThreads.append(alertThread)
+        alertThread.start()
+    syncThread = threading.Thread(target=sync_thread, daemon=True)
+    syncThread.start()
+
     EndPoint.run(host='0.0.0.0', debug=True, port=21090, use_reloader=False)
 
 if __name__=='__main__':
