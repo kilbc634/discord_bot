@@ -64,7 +64,7 @@ def generate_triggeredId(deviceId, alertIndex, size=6):
     }
     return uid
 
-def check_timeout(deviceId, timeout=60):
+def check_timeout(deviceId, timeout=300):
     timestamp = DeviceStore[deviceId]['timestamp']
     now = get_timestamp()
     if now > int(timestamp) + timeout:
@@ -118,8 +118,9 @@ def timeout_trigger(deviceId, timeout_status=True):
         traceback.print_exc()
 
 def alert_thread(deviceId):
-    print('[INFO] bind alertThread for -> ' + deviceId)
-    timeouted = False
+    print('[INFO] Bind alertThread for -> ' + deviceId)
+    if 'timeouted' not in DeviceStore[deviceId]:
+        DeviceStore[deviceId]['timeouted'] = False
     while True:
         delayTime = 3
         if deviceId not in DeviceStore:  # will stop this Thread
@@ -188,23 +189,24 @@ def alert_thread(deviceId):
                             del TriggeredSet[triggeredData['id']]
                             del DeviceStore[deviceId]['triggered']
         if check_timeout(deviceId):
-            if timeouted == False:
+            if DeviceStore[deviceId]['timeouted'] == False:
                 timeout_trigger(deviceId)
-            timeouted = True
+            DeviceStore[deviceId]['timeouted'] = True
             if 'triggerEnable' in DeviceStore[deviceId]:
                 DeviceStore[deviceId]['triggerEnable'] = False
             delayTime = 3
-        elif timeouted:
+        elif DeviceStore[deviceId]['timeouted']:
             timeout_trigger(deviceId, timeout_status=False)
-            timeouted = False
+            DeviceStore[deviceId]['timeouted'] = False
             if 'triggerEnable' in DeviceStore[deviceId]:
                 DeviceStore[deviceId]['triggerEnable'] = True
             delayTime = 3
+        print('[INFO] Heart beat of alertThread event loop from -> ' + deviceId)
         time.sleep(delayTime)
 
 def sync_thread(loopTime=60):
     while True:
-        print('[INFO] saving DeviceStore data to redis...\n' + str(DeviceStore))
+        print('[INFO] Saving DeviceStore data to redis...\n' + str(DeviceStore))
         redis_lib.save_all_device_data(DeviceStore)
         time.sleep(loopTime)
 
@@ -469,7 +471,6 @@ def view_report(path):
 
 def run(baseClient=None):
     global DiscordClient
-    global DeviceStore
     if baseClient:
         DiscordClient = baseClient
 
