@@ -92,10 +92,16 @@ def alert_trigger(deviceId, alertIndex):
         DiscordClient.loop.create_task(
             DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
         )
+    except:
+        traceback.print_exc()
+    try:
         ## for line bot
-        requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
-            json={"message": alert_text}
-        )
+        if deviceId.find("black") == 0 or name.find("black") == 0:
+            print('[INFO] Skip LINE bot alert for test device({})'.format(deviceId))
+        else:
+            requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
+                json={"message": alert_text}
+            )
     except:
         traceback.print_exc()
 
@@ -110,10 +116,16 @@ def timeout_trigger(deviceId, timeout_status=True):
         DiscordClient.loop.create_task(
             DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
         )
+    except:
+        traceback.print_exc()
+    try:
         ## for line bot
-        requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
-            json={"message": alert_text}
-        )
+        if deviceId.find("black") == 0 or name.find("black") == 0:
+            print('[INFO] Skip LINE bot timeout for test device({})'.format(deviceId))
+        else:
+            requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
+                json={"message": alert_text}
+            )
     except:
         traceback.print_exc()
 
