@@ -92,6 +92,11 @@ def alert_trigger(deviceId, alertIndex):
         DiscordClient.loop.create_task(
             DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
         )
+        if deviceId.find("black") == 0 or name.find("black") == 0:
+            print('[INFO] Push Discord DM for test device({})'.format(deviceId))
+            DiscordClient.loop.create_task(
+                DiscordClient.send_message_with_userId(DiscordClient.UserId_Tester, alert_text)
+            )
     except:
         traceback.print_exc()
     try:
@@ -116,6 +121,11 @@ def timeout_trigger(deviceId, timeout_status=True):
         DiscordClient.loop.create_task(
             DiscordClient.send_message_with_userId(DiscordClient.UserId_Owner, alert_text)
         )
+        if deviceId.find("black") == 0 or name.find("black") == 0:
+            print('[INFO] Push Discord DM for test device({})'.format(deviceId))
+            DiscordClient.loop.create_task(
+                DiscordClient.send_message_with_userId(DiscordClient.UserId_Tester, alert_text)
+            )
     except:
         traceback.print_exc()
     try:
