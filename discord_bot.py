@@ -79,7 +79,7 @@ class MyClient(discord.Client):
         self.clannelId_onCar = 557487268580032512
         self.clannelId_onTest = 643265881996132362
         self.UserId_Owner = 407554740906360833
-        self.UserId_Tester = 895943505871007765
+        self.UserId_Tester = 343430401340997632
 
     async def on_ready(self):
         try:
