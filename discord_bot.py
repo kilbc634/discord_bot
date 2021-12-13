@@ -125,6 +125,10 @@ class MyClient(discord.Client):
             elif message.content.find('咖哩拌飯') >= 0:
                 await message.channel.send('有人提到咖哩拌飯嗎?')
             return
+        elif message.content.lower().find('padoru') >= 0:
+            padoruFile = discord.File('res/image/padoru.gif')
+            await message.channel.send('', file=padoruFile)
+            return
         
         response = dict()
         if str(message.channel.type) == 'private':  # as Direct Message(DM)
