@@ -10,6 +10,7 @@ from setting import *
 from endpoint_server import DeviceStore
 from lib import redis_lib
 from lib import poeNinjaModel
+from lib import poeDbModel
 from lib import temperatureModel
 import matplotlib
 matplotlib.use('agg')
@@ -286,6 +287,21 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             )
             formatText = formatText + formatTextPart
         output['text'] = formatText
+
+    elif functionHeader == '!POEDB':
+        try:
+            target = ' '.join(functionArgs)
+        except:
+            output['text'] = FunctionInfo['!POE']
+            return output
+        try:
+            datas = poeDbModel.autoPick_ArchnemesisArea(target)
+        except:
+            traceback.print_exc()
+            output['text'] = '未知錯誤'
+            return output
+
+        output['text'] = str(datas)
 
     elif functionHeader == '!temperature':
         try:
