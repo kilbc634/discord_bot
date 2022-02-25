@@ -32,6 +32,7 @@ FunctionInfo = {
     "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)",
     "?TELEGRAM": "Format:\n?TELEGRAM",
     "!POE": "Format:\n!POE [api url]\nex: `https://poe.ninja/api/data/99c6ffc55e1585ef0c153787e51a4195/GetCharacter?account=nagmint&name=nag_llfl&overview=ultimatum`",
+    "!POEDB": "Format:\n!POEDB [archnemesis names]\nex: `!POEDB Malediction    Frenzied    Bloodletter    Overcharged    Malediction    Toxic    Bloodletter    Arcane Buffer`",
     "!temperature": "Format:\n!temperature [account] [password]"
 }
 
