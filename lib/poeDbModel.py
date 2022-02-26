@@ -32,8 +32,27 @@ def autoPick_ArchnemesisArea(target):
     
     # pick up best maps
     sortList = sorted(mapRanking.items(), key=lambda v: v[1], reverse=True)
-    return sortList
+    message = '```py'
+    currentRank = sortList[index][1]
+    rowCount = 0
+    for item in sortList:
+        if item[1] == currentRank:
+            if rowCount >= 3:
+                message = message + '\n'
+                rowCount = 0
+            message = message + '({name}, {count}) '.format(name=item[0], count=item[1])
+            rowCount = rowCount + 1
+        else:
+            currentRank = item[1]
+            message = message + '\n\n'
+            rowCount = 0
+            message = message + '({name}, {count}) '.format(name=item[0], count=item[1])
+            rowCount = rowCount + 1
+    message = message + '\n```'
+    return message
 
     
 if __name__ == "__main__":
-    autoPick_ArchnemesisArea('Malediction    Frenzied    Bloodletter    Overcharged    Malediction    Toxic    Bloodletter    Arcane Buffer')
+    output = autoPick_ArchnemesisArea('Malediction    Frenzied    Bloodletter    Overcharged    Malediction    Toxic    Bloodletter    Arcane Buffer')
+    print('output:')
+    print(output)

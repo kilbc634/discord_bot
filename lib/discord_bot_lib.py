@@ -296,13 +296,13 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
             output['text'] = FunctionInfo['!POE']
             return output
         try:
-            datas = poeDbModel.autoPick_ArchnemesisArea(target)
+            message = poeDbModel.autoPick_ArchnemesisArea(target)
         except:
             traceback.print_exc()
             output['text'] = '未知錯誤'
             return output
 
-        output['text'] = str(datas)
+        output['text'] = message
 
     elif functionHeader == '!temperature':
         try:
