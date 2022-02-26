@@ -32,8 +32,8 @@ def autoPick_ArchnemesisArea(target):
     
     # pick up best maps
     sortList = sorted(mapRanking.items(), key=lambda v: v[1], reverse=True)
-    message = '```py'
-    currentRank = sortList[index][1]
+    message = '```py\n'
+    currentRank = sortList[0][1]
     rowCount = 0
     for item in sortList:
         if item[1] == currentRank:
