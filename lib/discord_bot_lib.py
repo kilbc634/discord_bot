@@ -31,7 +31,7 @@ FunctionInfo = {
     "!PO": "Format:\n!PO [message]\nAttachment: (Optional: upload one image file)",
     "!TELEGRAM": "Format:\n!TELEGRAM [setup(S)|verify(V)|end(E)] [value]\n(value of setup: Phone number after +886)\n(value of verify: Verify number from Telegram mobile app)",
     "?TELEGRAM": "Format:\n?TELEGRAM",
-    "!POE": "Format:\n!POE [api url]\nex: `https://poe.ninja/api/data/99c6ffc55e1585ef0c153787e51a4195/GetCharacter?account=nagmint&name=nag_llfl&overview=ultimatum`",
+    "!POE": "Format:\n!POE [ninja url]\nex: `https://poe.ninja/challenge/builds/char/Pyron23/PyronKimchi?i=6`",
     "!POEDB": "Format:\n!POEDB [archnemesis names]\nex: `!POEDB Malediction    Frenzied    Bloodletter    Overcharged    Malediction    Toxic    Bloodletter    Arcane Buffer`",
     "!temperature": "Format:\n!temperature [account] [password]"
 }
@@ -266,14 +266,19 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
 
     elif functionHeader == '!POE':
         try:
-            apiUrl = functionArgs[0]
-            if apiUrl.find('https://poe.ninja/api/data/') != 0:
+            url = functionArgs[0]
+            if url.find('https://poe.ninja/') != 0:
                 raise ValueError
         except:
             output['text'] = FunctionInfo['!POE']
             return output
         try:
-            datas = poeNinjaModel.pickUp_ClusterJewel(apiUrl)
+            if url.find('https://poe.ninja/api/data/') == 0:
+                apiUrl = url
+                datas = poeNinjaModel.pickUp_ClusterJewel(url)
+            else:
+                apiUrl = poeNinjaModel.get_apiUrl_from_ninjaUrl(url)
+                datas = poeNinjaModel.pickUp_ClusterJewel(apiUrl)
         except:
             traceback.print_exc()
             output['text'] = '未知錯誤'
