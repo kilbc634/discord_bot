@@ -16,6 +16,7 @@ Login Telegram By Phone Number
 Input Phone Data
     [Documentation]    Input phone data, default for Taiwan(+886) phone
     [Arguments]    ${phone}    ${phoneCountry}=+886
+    Sleep    3s
     Wait Until Element Is Visible    //input[@id="sign-in-phone-number"]
     Input Text    //input[@id="sign-in-phone-number"]    ${phoneCountry}${phone}    clear=${true}
 
