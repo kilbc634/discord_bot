@@ -51,7 +51,7 @@ Start Listen Telegram Contact Status
 Get Total Active Count On Contact Sidebar
     [Documentation]    Get total active count on contact sidebar
     ${total} =    Set Variable    ${0}
-    @{elements} =    Get WebElements    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="title"]/h3[text()!="A.G.M.P. Information"][text()!="AGMP-版本通知"]/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]
+    @{elements} =    Get WebElements    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="info-row"]/div[contains(@class, "title")]/h3[@class="fullName"][text()!="Telegram"][text()!="A.G.M.P. Information"][text()!="AGMP-版本通知"][text()!="AGMP- QA告警"]/parent::*/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]
     FOR    ${element}    IN    @{elements}
         ${count} =    Get Element Attribute    ${element}    textContent
         ${total} =    Evaluate    ${total} + ${count}
