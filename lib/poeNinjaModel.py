@@ -34,26 +34,28 @@ def pickUp_ClusterJewel(apiUrl):
     return pickUpDatas
 
 def get_apiUrl_from_ninjaUrl(ninjaUrl):
+    # parser url data
     urlData = re.findall('https://poe.ninja/(.+)/builds/char/(.+)/(.+)\?', ninjaUrl)[0]
     pageName = urlData[0]
     playerAccount = urlData[1]
     playerName = urlData[2]
 
-    resp = requests.get(ninjaUrl)
-    docText = resp.text
+    # get indexState to complate Character api URL
+    indexStateUrl = 'https://poe.ninja/api/data/getindexstate?'
+    resp = requests.get(indexStateUrl)
+    indexStateData = resp.json()
 
-    buildLeaguesText = re.findall('window\.buildLeagues[\s]*=[\s]*(\[.+\]);', docText)[0]
-    buildLeagues = json.loads(buildLeaguesText)
-    for obj in buildLeagues:
+    # buildLeague from indexState
+    for obj in indexStateData['buildLeagues']:
         if obj['url'] == pageName:
-            leagueName = obj['name']
-    
-    snapshotVersionsText = re.findall('window\.snapshotVersions[\s]*=[\s]*(\[.+\]);', docText)[0]
-    snapshotVersions = json.loads(snapshotVersionsText)
-    for obj in snapshotVersions:
-        if obj['url'] == pageName and obj['type'] == 'exp' and obj['name'] == leagueName:
-            versionText = obj['version']
+            buildLeague = obj['name']
+    # snapshotVersion and snapshotName from indexState
+    for obj in indexStateData['snapshotVersions']:
+        if obj['url'] == pageName and obj['type'] == 'exp' and obj['name'] == buildLeague:
+            snapshotVersion = obj['version']
+            snapshotName = obj['snapshotName']
 
-    apiUrl = 'https://poe.ninja/api/data/{version}/GetCharacter?account={account}&name={name}&overview={league}&type=exp&language=en'.format(version=versionText, account=playerAccount, name=playerName, league=leagueName.lower())
+    # complate Character api URL
+    apiUrl = 'https://poe.ninja/api/data/{version}/GetCharacter?account={account}&name={name}&overview={overview}&type=exp&language=en'.format(version=snapshotVersion, account=playerAccount, name=playerName, overview=snapshotName)
 
     return apiUrl

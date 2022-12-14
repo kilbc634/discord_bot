@@ -298,7 +298,7 @@ def command_line(client, content, attachments=[], admin=False, messageObj=None):
         try:
             target = ' '.join(functionArgs)
         except:
-            output['text'] = FunctionInfo['!POE']
+            output['text'] = FunctionInfo['!POEDB']
             return output
         try:
             message = poeDbModel.autoPick_ArchnemesisArea(target)
