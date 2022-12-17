@@ -1,10 +1,15 @@
 import requests
 import json
 import re
+from urllib.parse import urlparse, parse_qs
 
 def pickUp_ClusterJewel(apiUrl):
+    print('[INFO] Getting URL {apiUrl}'.format(**locals()))
     resp = requests.get(apiUrl)
+    print('[INFO] Done')
+    print(resp)
     characterData = resp.json()
+    print(characterData)
 
     pickUpDatas = list()
     for jewelData in characterData['jewels']:
@@ -35,10 +40,20 @@ def pickUp_ClusterJewel(apiUrl):
 
 def get_apiUrl_from_ninjaUrl(ninjaUrl):
     # parser url data
-    urlData = re.findall('https://poe.ninja/(.+)/builds/char/(.+)/(.+)\?', ninjaUrl)[0]
+    parseResult = urlparse(ninjaUrl)
+    print('[INFO] Parser url object:')
+    print(parseResult)
+    urlData = re.findall('/(.+)/builds/char/(.+)/(.+)', parseResult.path)[0]
     pageName = urlData[0]
     playerAccount = urlData[1]
     playerName = urlData[2]
+    print('[INFO] Parser pageName={pageName} playerAccount={playerAccount} playerName={playerName} From {urlData}'.format(**locals()))
+    # with time-machine
+    queryData = parse_qs(parseResult.query)
+    timeMachine = ''
+    if 'time-machine' in queryData:
+        timeMachine = queryData['time-machine'][0]
+        print('[INFO] Parser timeMachine={timeMachine} From {queryData}'.format(**locals()))
 
     # get indexState to complate Character api URL
     indexStateUrl = 'https://poe.ninja/api/data/getindexstate?'
@@ -57,5 +72,9 @@ def get_apiUrl_from_ninjaUrl(ninjaUrl):
 
     # complate Character api URL
     apiUrl = 'https://poe.ninja/api/data/{version}/GetCharacter?account={account}&name={name}&overview={overview}&type=exp&language=en'.format(version=snapshotVersion, account=playerAccount, name=playerName, overview=snapshotName)
+    print('[INFO] Create URL {apiUrl}'.format(**locals()))
+    if timeMachine:
+        apiUrl = apiUrl + '&timeMachine={}'.format(timeMachine)
+        print('[INFO] Add timeMachine={timeMachine} For URL'.format(**locals()))
 
     return apiUrl
