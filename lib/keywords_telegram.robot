@@ -51,10 +51,23 @@ Start Listen Telegram Contact Status
 Get Total Active Count On Contact Sidebar
     [Documentation]    Get total active count on contact sidebar
     ${total} =    Set Variable    ${0}
-    @{elements} =    Get WebElements    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="info-row"]/div[contains(@class, "title")]/h3[@class="fullName"][text()!="Telegram"][text()!="A.G.M.P. Information"][text()!="AGMP-版本通知"][text()!="AGMP- QA告警"]/parent::*/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]//span[text()]
-    FOR    ${element}    IN    @{elements}
-        ${count} =    Get Element Attribute    ${element}    textContent
-        ${total} =    Evaluate    ${total} + ${count}
+    ${unread} =    Set Variable    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="info-row"]/div[contains(@class, "title")]/h3[@class="fullName"][text()!="Telegram"][text()!="A.G.M.P. Information"][text()!="AGMP-版本通知"][text()!="AGMP- QA告警"]/parent::*/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]
+    @{unreadElements} =    Get WebElements    ${unread}
+    FOR    ${ele1}    IN    @{unreadElements}
+        ${child} =    Set Variable    /span[@class]/*
+        @{childElements} =    Call Method    ${ele1}    find_element_by_xpath    ${child}
+        ${numberText} =    Set Variable    ${EMPTY}
+        FOR    ${ele2}    IN    @{childElements}
+            ${tag} =    Set Variable    ${ele2.tag_name}
+            IF    '${tag}' == 'span'
+                ${text} =    Get Text    ${ele2}
+            ELSE IF    '${tag}' == 'div'
+                ${temp} =    Call Method    ${ele2}    find_element_by_xpath    /div[1]
+                ${text} =    Get Text    ${temp}
+            END
+            ${numberText} =    Set Variable    ${numberText}${text}
+        END
+        ${total} =    Evaluate    ${total} + ${numberText}
     END
     [Return]    ${total}
 
