@@ -57,17 +57,17 @@ Get Total Active Count On Contact Sidebar
         ${child} =    Set Variable    ./span[@class]/*
         @{childElements} =    Call Method    ${ele1}    find_elements_by_xpath    ${child}
         ${numberText} =    Set Variable    ${EMPTY}
-        FOR    ${ele2}    IN    @{childElements}
-            Log    TEST2
-        #     ${tag} =    Set Variable    ${ele2.tag_name}
-        #     IF    '${tag}' == 'span'
-        #         ${text} =    Get Text    ${ele2}
-        #     ELSE IF    '${tag}' == 'div'
-        #         ${temp} =    Call Method    ${ele2}    find_element_by_xpath    ./div[1]
-        #         ${text} =    Get Text    ${temp}
-        #     END
-        #     ${numberText} =    Set Variable    ${numberText}${text}
-        END
+        # FOR    ${ele2}    IN    @{childElements}
+            # Log    TEST2
+            # ${tag} =    Set Variable    ${ele2.tag_name}
+            # IF    '${tag}' == 'span'
+            #     ${text} =    Get Text    ${ele2}
+            # ELSE IF    '${tag}' == 'div'
+            #     ${temp} =    Call Method    ${ele2}    find_element_by_xpath    ./div[1]
+            #     ${text} =    Get Text    ${temp}
+            # END
+            # ${numberText} =    Set Variable    ${numberText}${text}
+        # END
         # ${total} =    Evaluate    ${total} + ${numberText}
     END
     [Return]    ${total}
