@@ -55,7 +55,7 @@ Get Total Active Count On Contact Sidebar
     @{unreadElements} =    Get WebElements    ${unread}
     FOR    ${ele1}    IN    @{unreadElements}
         ${child} =    Set Variable    /span[@class]/*
-        @{childElements} =    Call Method    ${ele1}    find_element_by_xpath    ${child}
+        @{childElements} =    Call Method    ${ele1}    find_elements_by_xpath    ${child}
         ${numberText} =    Set Variable    ${EMPTY}
         # FOR    ${ele2}    IN    @{childElements}
         #     ${tag} =    Set Variable    ${ele2.tag_name}
