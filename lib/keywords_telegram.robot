@@ -54,7 +54,7 @@ Get Total Active Count On Contact Sidebar
     ${unread} =    Set Variable    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="info-row"]/div[contains(@class, "title")]/h3[@class="fullName"][text()!="Telegram"][text()!="A.G.M.P. Information"][text()!="AGMP-版本通知"][text()!="AGMP- QA告警"]/parent::*/parent::*/parent::*/div[@class="subtitle"]//div[@class="Badge unread"]
     @{unreadElements} =    Get WebElements    ${unread}
     FOR    ${ele1}    IN    @{unreadElements}
-        ${child} =    Set Variable    /span[@class]/*
+        ${child} =    Set Variable    ./span[@class]/*
         @{childElements} =    Call Method    ${ele1}    find_elements_by_xpath    ${child}
         ${numberText} =    Set Variable    ${EMPTY}
         FOR    ${ele2}    IN    @{childElements}
@@ -63,7 +63,7 @@ Get Total Active Count On Contact Sidebar
         #     IF    '${tag}' == 'span'
         #         ${text} =    Get Text    ${ele2}
         #     ELSE IF    '${tag}' == 'div'
-        #         ${temp} =    Call Method    ${ele2}    find_element_by_xpath    /div[1]
+        #         ${temp} =    Call Method    ${ele2}    find_element_by_xpath    ./div[1]
         #         ${text} =    Get Text    ${temp}
         #     END
         #     ${numberText} =    Set Variable    ${numberText}${text}
