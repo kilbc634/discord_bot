@@ -62,7 +62,7 @@ Get Total Active Count On Contact Sidebar
             IF    '${tag}' == 'span'
                 ${text} =    Get Text    ${ele2}
             ELSE IF    '${tag}' == 'div'
-                ${temp} =    Call Method    ${ele2}    find_element_by_xpath    ./div[1]
+                ${temp} =    Call Method    ${ele2}    find_element_by_xpath    ./div[3]
                 ${text} =    Get Text    ${temp}
             END
             ${numberText} =    Set Variable    ${numberText}${text}
