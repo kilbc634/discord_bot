@@ -16,7 +16,7 @@ Listen Telegram By Discord Author Id
     Click Button For Login By Phone Number
     Login Telegram By Phone Number    ${phoneNumber}
     Wait Until Verify Code Is Got And Input    ${authorId}
-    Wait Until Page Contains Element    //div[@class="ListItem-button"]/div[@class="info"]/div[@class="subtitle"]/p
+    Wait Until Page Contains Element    //a[@class="ListItem-button"]/div[@class="info"]/div[@class="subtitle"]/p
     Start Listen Telegram Contact Status    ${authorId}
     [Teardown]    Delete Bind Data Via Telegram API    ${authorId}
 
