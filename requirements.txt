@@ -1,4 +1,4 @@
-requests==2.22.0
+requests==2.31.0
 robotframework==6.0.1
 robotframework-seleniumlibrary==4.1.0
 discord.py[voice]==1.4.1
