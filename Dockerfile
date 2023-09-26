@@ -26,8 +26,8 @@ RUN apt -y install ffmpeg
 RUN CHROMEDRIVER_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE) && \
     wget -q "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROMEDRIVER_VERSION}/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip
 RUN unzip /tmp/chromedriver.zip -d /tmp
-RUN mv /tmp/chromedriver /tmp/chromedriver_linux
-RUN mv /tmp/chromedriver_linux lib/
+RUN mv /tmp/chromedriver-linux64/chromedriver /tmp/chromedriver-linux64/chromedriver_linux
+RUN mv /tmp/chromedriver-linux64/chromedriver_linux lib/
 RUN rm /tmp/chromedriver.zip
 
 # change webdevice permission
