@@ -27,7 +27,7 @@ RUN CHROMEDRIVER_VERSION=$(curl -sS https://googlechromelabs.github.io/chrome-fo
     wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O /tmp/chromedriver.zip && \
     unzip /tmp/chromedriver.zip -d /tmp && \
     mv /tmp/chromedriver /tmp/chromedriver_linux && \
-    mv -f /tmp/chromedriver_linux lib/ && \
+    mv /tmp/chromedriver_linux lib/ && \
     rm /tmp/chromedriver.zip
 
 # change webdevice permission
