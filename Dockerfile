@@ -22,6 +22,14 @@ RUN echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/so
 RUN apt -y update
 RUN apt -y install google-chrome-stable
 RUN apt -y install ffmpeg
+# download webdevice for linux
+RUN RUN CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
+    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O /tmp/chromedriver.zip && \
+    unzip /tmp/chromedriver.zip -d /tmp && \
+    mv /tmp/chromedriver /tmp/chromedriver_linux && \
+    mv /tmp/chromedriver_linux lib/ && \
+    rm /tmp/chromedriver.zip
+
 # change webdevice permission
 RUN chmod 777 lib/chromedriver_linux
 RUN chmod 777 lib/chromedriver_win.exe
