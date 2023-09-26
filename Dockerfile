@@ -23,7 +23,7 @@ RUN apt -y update
 RUN apt -y install google-chrome-stable
 RUN apt -y install ffmpeg
 # download webdevice for linux
-RUN RUN CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
+RUN CHROMEDRIVER_VERSION=$(curl -sS https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && \
     wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O /tmp/chromedriver.zip && \
     unzip /tmp/chromedriver.zip -d /tmp && \
     mv /tmp/chromedriver /tmp/chromedriver_linux && \
