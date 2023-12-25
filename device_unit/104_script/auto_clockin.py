@@ -38,6 +38,9 @@ def get_current_datetime():
     return current_time_utc_plus_eight
 
 def check_hours_difference(startDate, endDate, hours=9):
+    print("[DEBUG] check_hours_difference")
+    print(startDate)
+    print(endDate)
     # 计算时间差
     timeDifference = endDate - startDate
 
