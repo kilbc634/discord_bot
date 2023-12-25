@@ -25,7 +25,10 @@ def get_start_of_day_unix_timestamp():
     return start_of_day_unix_timestamp
 
 def timestamp_to_datetime(timestamp):
-    return datetime.datetime.fromtimestamp(timestamp)
+    utc_offset = datetime.timedelta(hours=8)
+    tz = datetime.timezone(utc_offset)
+    convertedDateTime = datetime.datetime.fromtimestamp(timestamp, tz=tz)
+    return convertedDateTime
 
 def get_current_datetime():
     # 获取当前时间（系统默认时区为 UTC）
