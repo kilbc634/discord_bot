@@ -18,6 +18,8 @@ def get_start_of_day_unix_timestamp():
                                     hour=0, minute=0, second=0)
 
     # 转换为 Unix 时间戳
+    tz = datetime.timezone(utc_offset)
+    start_of_day = start_of_day.replace(tzinfo=tz)
     start_of_day_unix_timestamp = int(start_of_day.timestamp())
 
     return start_of_day_unix_timestamp
@@ -104,6 +106,8 @@ if __name__ == '__main__':
     respDayInfo = session.get('https://pro.104.com.tw/psc2/api/home/newCalendar/day/info/{timestamp}'.format(
         timestamp=str(todayTimestamp)
     )).json()
+    print('[DEBUG] show respDayInfo')
+    print(respDayInfo)
 
     # check data is today
     todayData = None
@@ -159,6 +163,8 @@ if __name__ == '__main__':
     if doClockIn:
         print("Do ClockIn....")
         respClockIn = session.post('https://pro.104.com.tw/psc2/api/f0400/newClockin').json()
+        print('[DEBUG] show respClockIn')
+        print(respClockIn)
         
         if respClockIn['message'] == 'OK':
             print("Do ClockIn Done")
