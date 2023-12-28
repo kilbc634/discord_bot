@@ -37,6 +37,8 @@ def get_current_datetime():
     # 将系统时间转换为 UTC+8 时区的时间
     utc_offset = datetime.timedelta(hours=8)  # UTC+8 时区的时间偏移量
     current_time_utc_plus_eight = current_time_utc + utc_offset
+    tz = datetime.timezone(utc_offset)
+    current_time_utc_plus_eight = current_time_utc_plus_eight.replace(tzinfo=tz)
 
     return current_time_utc_plus_eight
 
@@ -137,12 +139,12 @@ if __name__ == '__main__':
 
     if len(todayData['events']) > 0 or len(todayData['leave']) > 0:  # when dayoff
         print("[CHECK] on day-off")
-    elif datetime.time(9, 30) <= currentDate.time() <= datetime.time(10, 0):  # 如果在 9:30 ~ 10:00 之間
+    elif datetime.time(9, 35) <= currentDate.time() <= datetime.time(10, 0):  # 如果在 9:35 ~ 10:00 之間
         print("[CHECK] on day-start")
         if startDate is None:
             print("[CHECK] if startDate is None")
             doClockIn = True
-    elif currentDate.time() >= datetime.time(18, 30):  # 如果在 18:30 之後
+    elif currentDate.time() >= datetime.time(18, 35):  # 如果在 18:35 之後
         print("[CHECK] on day-end")
         if startDate is None and endDate is None:
             print("[CHECK] if startDate is None and endDate is None")
