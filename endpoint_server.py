@@ -100,10 +100,8 @@ def alert_trigger(deviceId, alertIndex):
     except:
         traceback.print_exc()
     try:
-        ## for line bot
-        if deviceId.find("black") == 0 or name.find("black") == 0:
-            print('[INFO] Skip LINE bot alert for test device({})'.format(deviceId))
-        else:
+        ## for line bot with special case
+        if deviceId.find("water") >= 0 or name.find("water") >= 0:
             requests.post(LINE_HOST + '/alert_group/' + linebotapp.groupId_reporter,
                 json={"message": alert_text}
             )
