@@ -5,7 +5,7 @@ discord.py[voice]==1.4.1
 flask==1.1.2
 robotframework-requests==0.6.3
 line-bot-sdk==1.17.0
-lxml==4.3.1
+lxml==5.1.0
 redis==2.10.6
 matplotlib==3.0.3
 youtube-dl==2021.6.6
