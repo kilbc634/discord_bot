@@ -108,6 +108,12 @@ if __name__ == '__main__':
     #     ]
     # }
 
+    # about clockInCode
+    # 11: 異常（上班未打卡）
+    # 4: 正常（上下班都打卡）
+    # 3: 未比對
+    # Empty: 未知異常？ 在換日時有可能發生
+
     # get today info
     print("Get Today Info....")
     todayTimestamp = get_start_of_day_unix_timestamp() * 1000
@@ -124,6 +130,9 @@ if __name__ == '__main__':
     else:
         raise RuntimeError("Today Data Error")
     
+    if not todayData['clockIn']:
+        raise RuntimeError("ClockIn Data Empty")
+
     startDate = None
     if todayData['clockIn']['start']:
         startDate = timestamp_to_datetime(todayData['clockIn']['start'] / 1000)
