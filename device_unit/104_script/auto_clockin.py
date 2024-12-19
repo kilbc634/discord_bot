@@ -148,12 +148,12 @@ if __name__ == '__main__':
 
     if len(todayData['events']) > 0 or len(todayData['leave']) > 0:  # when dayoff
         print("[CHECK] on day-off")
-    elif datetime.time(9, 35) <= currentDate.time() <= datetime.time(10, 0):  # 如果在 9:35 ~ 10:00 之間
+    elif datetime.time(9, 30) <= currentDate.time() <= datetime.time(10, 0):  # 如果在 9:30 ~ 10:00 之間
         print("[CHECK] on day-start")
         if startDate is None:
             print("[CHECK] if startDate is None")
             doClockIn = True
-    elif currentDate.time() >= datetime.time(18, 35):  # 如果在 18:35 之後
+    elif currentDate.time() >= datetime.time(18, 30):  # 如果在 18:30 之後
         print("[CHECK] on day-end")
         if startDate is None and endDate is None:
             print("[CHECK] if startDate is None and endDate is None")
