@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     try:
         while True:
-            resp = requests.post('https://chat.gpms365.net/webapi/entry.cgi',
+            resp = requests.post('https://pinesparkle.synology.me/webapi/entry.cgi',
             headers={
                 'cookie': cookie,
                 'x-syno-token': token
